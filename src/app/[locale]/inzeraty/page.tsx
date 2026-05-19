@@ -1,33 +1,11 @@
 import { Badge, Button, Card, Group, SimpleGrid, Stack, Text, Title } from "@mantine/core";
-
-const inzeraty = [
-  {
-    id: 1,
-    nazev: "Detska zidle",
-    popis: "Zachovala detska zidle vhodna ke stolu.",
-    cena: 300,
-    kategorie: "Detske veci",
-    stav: "Dostupne",
-  },
-  {
-    id: 2,
-    nazev: "Starsi monitor",
-    popis: "Funkcni monitor vhodny jako druha obrazovka.",
-    cena: 0,
-    kategorie: "Elektronika",
-    stav: "Dostupne",
-  },
-  {
-    id: 3,
-    nazev: "Krabice knih",
-    popis: "Mix starsich knih, vhodne k dalsimu cteni.",
-    cena: 0,
-    kategorie: "Knihy",
-    stav: "Rezervovano",
-  },
-];
+import { db } from "@/db";
+import { advert } from "@/db/schemas";
+import { Link } from "@/i18n/navigation";
 
 export default function InzeratyPage() {
+  const inzeraty = db.select().from(advert).all();
+
   return (
     <Stack gap="lg">
       <Group justify="space-between">
@@ -40,8 +18,8 @@ export default function InzeratyPage() {
           <Card key={inzerat.id} shadow="sm" padding="lg" radius="md" withBorder>
             <Stack gap="sm">
               <Group justify="space-between">
-                <Text fw={700}>{inzerat.nazev}</Text>
-                <Badge>{inzerat.stav}</Badge>
+                <Text fw={700}>{inzerat.titul}</Text>
+                <Badge>{inzerat.status}</Badge>
               </Group>
 
               <Text size="sm" c="dimmed">
@@ -53,7 +31,11 @@ export default function InzeratyPage() {
                 <Text fw={700}>{inzerat.cena === 0 ? "Zdarma" : `${inzerat.cena} Kc`}</Text>
               </Group>
 
-              <Button variant="light">Detail</Button>
+              <Link href={`/inzeraty/${inzerat.id}`}>
+                <Button variant="light" fullWidth>
+                  Detail
+                </Button>
+              </Link>
             </Stack>
           </Card>
         ))}
