@@ -24,57 +24,58 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
   const imageSrc = getAdvertImageSrc(inzerat.obrazek);
 
   return (
-    <Stack gap="lg" className="market-page">
+    <Stack gap="lg">
       <Link href="/inzeraty">
-        <Button variant="subtle" className="market-back-button">
-          Zpet na trziste
-        </Button>
+        <Button variant="subtle">Zpet na inzeraty</Button>
       </Link>
 
-      <Card padding="lg" withBorder className="market-detail-card">
+      <Card shadow="sm" padding="lg" radius="md" withBorder>
         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
           {imageSrc ? (
-            <Image className="market-detail-image" src={imageSrc} alt={inzerat.titul} width={520} height={360} />
+            <Image
+              src={imageSrc}
+              alt={inzerat.titul}
+              width={520}
+              height={360}
+              style={{
+                width: "100%",
+                maxHeight: 360,
+                objectFit: "contain",
+                borderRadius: 8,
+              }}
+            />
           ) : null}
 
-          <Stack gap="md" className="market-detail-panel">
+          <Stack gap="md">
             <Group justify="space-between">
-              <Title order={1} className="market-title">
-                {inzerat.titul}
-              </Title>
-              <Badge variant="filled" className="market-status-badge">
-                {inzerat.status}
-              </Badge>
+              <Title order={1}>{inzerat.titul}</Title>
+              <Badge>{inzerat.status}</Badge>
             </Group>
 
-            <Divider className="market-divider" />
+            <Divider />
 
             <Stack gap="xs">
-              <Text size="sm" className="market-label">
+              <Text size="sm" c="dimmed">
                 Popis
               </Text>
-              <Text className="market-detail-text">{inzerat.popis}</Text>
+              <Text>{inzerat.popis}</Text>
             </Stack>
 
-            <Divider className="market-divider" />
+            <Divider />
 
             <Group justify="space-between">
               <Stack gap={4}>
-                <Text size="sm" className="market-label">
+                <Text size="sm" c="dimmed">
                   Kategorie
                 </Text>
-                <Badge variant="filled" className="market-category-badge">
-                  {inzerat.kategorie}
-                </Badge>
+                <Badge variant="light">{inzerat.kategorie}</Badge>
               </Stack>
 
               <Stack gap={4} align="flex-end">
-                <Text size="sm" className="market-label">
+                <Text size="sm" c="dimmed">
                   Cena
                 </Text>
-                <Text fw={700} className="market-price">
-                  {inzerat.cena === 0 ? "Zdarma" : `${inzerat.cena} Kc`}
-                </Text>
+                <Text fw={700}>{inzerat.cena === 0 ? "Zdarma" : `${inzerat.cena} Kc`}</Text>
               </Stack>
             </Group>
           </Stack>

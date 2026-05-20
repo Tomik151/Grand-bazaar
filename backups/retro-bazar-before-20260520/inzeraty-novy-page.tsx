@@ -81,48 +81,31 @@ async function createAdvert(formData: FormData) {
 
 export default function NovyInzeratPage() {
   return (
-    <Stack gap="xl" className="market-page">
+    <Stack gap="xl">
       <Group justify="space-between" align="center">
-        <div>
-          <Text className="market-kicker">New stall permit</Text>
-          <Title order={1} className="market-title">
-            Pridat nabidku
-          </Title>
-        </div>
+        <Title order={1}>Pridat nabidku</Title>
 
         <Link href="/inzeraty">
-          <Button variant="subtle" className="market-back-button">
+          <Button variant="subtle" color="red">
             Zpet
           </Button>
         </Link>
       </Group>
 
-      <Card padding="xl" withBorder maw={864} w="100%" className="market-form-card">
+      <Card shadow="md" padding="xl" radius="md" withBorder maw={864} w="100%">
         <form action={createAdvert}>
           <Stack gap="lg">
-            <TextInput
-              name="titul"
-              label="Nazev veci"
-              placeholder="Napr. konferencni stolek"
-              classNames={{ input: "market-input", label: "market-input-label" }}
-              required
-            />
+            <TextInput name="titul" label="Nazev veci" placeholder="Napr. konferencni stolek" required />
 
             <Textarea
               name="popis"
               label="Popis"
               placeholder="Popis stav, rozmery, misto predani..."
               minRows={4}
-              classNames={{ input: "market-input", label: "market-input-label" }}
               required
             />
 
-            <NativeSelect
-              name="kategorie"
-              label="Kategorie"
-              classNames={{ input: "market-input", label: "market-input-label" }}
-              required
-            >
+            <NativeSelect name="kategorie" label="Kategorie" required>
               <option value="">Vyber kategorii</option>
               <option value="Domacnost">Domacnost</option>
               <option value="Elektronika">Elektronika</option>
@@ -133,37 +116,22 @@ export default function NovyInzeratPage() {
             </NativeSelect>
 
             <Group align="end" gap="lg">
-              <TextInput
-                name="cena"
-                label="Cena"
-                type="number"
-                min={0}
-                defaultValue={0}
-                rightSection="Kc"
-                w={400}
-                classNames={{ input: "market-input", label: "market-input-label" }}
-              />
+              <TextInput name="cena" label="Cena" type="number" min={0} defaultValue={0} rightSection="Kc" w={400} />
               <Checkbox name="zdarma" label="Nabidka je zdarma" mb={10} />
             </Group>
 
             <SimpleGrid cols={{ base: 1, sm: 2 }}>
-              <NativeSelect
-                name="status"
-                label="Stav nabidky"
-                defaultValue="Dostupne"
-                classNames={{ input: "market-input", label: "market-input-label" }}
-                required
-              >
+              <NativeSelect name="status" label="Stav nabidky" defaultValue="Dostupne" required>
                 <option value="Dostupne">Dostupne</option>
                 <option value="Rezervovano">Rezervovano</option>
                 <option value="Prodano">Prodano</option>
               </NativeSelect>
 
-              <Stack gap={6} className="market-file-box">
-                <Text fw={500} size="sm" className="market-input-label">
+              <Stack gap={6}>
+                <Text fw={500} size="sm">
                   Obrazek
                 </Text>
-                <input type="file" name="obrazekSoubor" accept="image/*" className="market-file-input" />
+                <input type="file" name="obrazekSoubor" accept="image/*" />
                 <Text size="xs" c="dimmed">
                   Vyber obrazek z pocitace. Aplikace ho ulozi do public/inzeraty.
                 </Text>
@@ -175,7 +143,7 @@ export default function NovyInzeratPage() {
             </Text>
 
             <Group justify="flex-end">
-              <Button type="submit" className="market-action-button">
+              <Button type="submit" color="orange">
                 Pridat nabidku
               </Button>
             </Group>

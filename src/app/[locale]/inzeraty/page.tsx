@@ -9,54 +9,54 @@ export default function InzeratyPage() {
   const inzeraty = db.select().from(advert).all();
 
   return (
-    <Stack gap="lg">
-      <Group justify="space-between">
-        <Title>Inzeraty</Title>
+    <Stack gap="xl" className="market-page">
+      <Group justify="space-between" align="flex-end" className="market-heading">
+        <div>
+          <Text className="market-kicker">Istanbul modem bazaar</Text>
+          <Title className="market-title">Trziste</Title>
+        </div>
         <Link href="/inzeraty/novy">
-          <Button>Novy inzerat</Button>
+          <Button className="market-action-button">Pridat zbozi</Button>
         </Link>
       </Group>
 
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }}>
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
         {inzeraty.map((inzerat) => {
           const imageSrc = getAdvertImageSrc(inzerat.obrazek);
 
           return (
-            <Card key={inzerat.id} shadow="sm" padding="lg" radius="md" withBorder h="100%">
+            <Card key={inzerat.id} padding="lg" withBorder h="100%" className="market-card">
               {imageSrc ? (
-                <Image
-                  src={imageSrc}
-                  alt={inzerat.titul}
-                  width={400}
-                  height={240}
-                  style={{
-                    width: "100%",
-                    height: 180,
-                    objectFit: "cover",
-                    borderRadius: 8,
-                  }}
-                />
+                <Image className="market-card-image" src={imageSrc} alt={inzerat.titul} width={400} height={240} />
               ) : null}
 
               <Stack gap="sm" h="100%" mt="sm">
                 <Group justify="space-between">
-                  <Text fw={700}>{inzerat.titul}</Text>
-                  <Badge>{inzerat.status}</Badge>
+                  <Text fw={700} className="market-card-title">
+                    {inzerat.titul}
+                  </Text>
+                  <Badge variant="filled" className="market-status-badge">
+                    {inzerat.status}
+                  </Badge>
                 </Group>
 
-                <Text size="sm" c="dimmed" lineClamp={3} mih={60}>
+                <Text size="sm" lineClamp={3} mih={60} className="market-card-description">
                   {inzerat.popis}
                 </Text>
 
                 <Group justify="space-between">
-                  <Badge variant="light">{inzerat.kategorie}</Badge>
-                  <Text fw={700}>{inzerat.cena === 0 ? "Zdarma" : `${inzerat.cena} Kc`}</Text>
+                  <Badge variant="filled" className="market-category-badge">
+                    {inzerat.kategorie}
+                  </Badge>
+                  <Text fw={700} className="market-price">
+                    {inzerat.cena === 0 ? "Zdarma" : `${inzerat.cena} Kc`}
+                  </Text>
                 </Group>
 
                 <div style={{ flex: 1 }} />
 
                 <Link href={`/inzeraty/${inzerat.id}`}>
-                  <Button variant="light" fullWidth>
+                  <Button variant="light" fullWidth className="market-card-button">
                     Detail
                   </Button>
                 </Link>

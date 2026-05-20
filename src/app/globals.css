@@ -6,3 +6,527 @@
 @import "@mantine/core/styles.layer.css";
 
 @import "tailwindcss/utilities.css" layer(utilities);
+
+:root {
+  --bazaar-ink: #21130d;
+  --bazaar-red: #e23b1a;
+  --bazaar-orange: #ff7a1a;
+  --bazaar-gold: #ffd447;
+  --bazaar-cyan: #18b7c9;
+  --bazaar-blue: #2454d6;
+  --bazaar-green: #1e9d58;
+  --bazaar-paper: #b71912;
+  --bazaar-card: #fff8dc;
+  --bazaar-shadow: #4c2b16;
+}
+
+html {
+  background: var(--bazaar-paper);
+}
+
+body {
+  min-height: 100vh;
+  color: var(--bazaar-ink);
+  background:
+    radial-gradient(circle at 16px 16px, rgba(255, 212, 71, 0.34) 0 3px, transparent 4px),
+    radial-gradient(circle at 48px 48px, rgba(24, 183, 201, 0.2) 0 4px, transparent 5px),
+    linear-gradient(45deg, rgba(255, 212, 71, 0.2) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 248, 220, 0.18) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 122, 26, 0.18) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(24, 183, 201, 0.12) 75%),
+    repeating-linear-gradient(90deg, #a91510 0 34px, #c81d14 34px 68px, #8f120f 68px 102px);
+  background-position:
+    0 0,
+    0 0,
+    0 0,
+    0 16px,
+    16px -16px,
+    -16px 0,
+    0 0,
+    0 0;
+  background-size:
+    64px 64px,
+    64px 64px,
+    32px 32px,
+    32px 32px,
+    32px 32px,
+    32px 32px,
+    auto;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@keyframes bazaar-ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes bazaar-card-wiggle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-3px) rotate(-0.4deg);
+  }
+}
+
+@keyframes nyan-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.bazaar-shell {
+  background: transparent;
+}
+
+.bazaar-header {
+  border-bottom: 4px solid var(--bazaar-ink);
+  background:
+    linear-gradient(180deg, rgba(226, 59, 26, 0.32), transparent 58px),
+    repeating-linear-gradient(90deg, rgba(255, 212, 71, 0.2) 0 10px, transparent 10px 20px), var(--bazaar-card);
+  box-shadow:
+    0 6px 0 var(--bazaar-shadow),
+    0 10px 0 rgba(226, 59, 26, 0.72);
+}
+
+.bazaar-header-inner {
+  position: relative;
+}
+
+.bazaar-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.bazaar-brand img {
+  image-rendering: pixelated;
+  filter: drop-shadow(3px 3px 0 rgba(33, 19, 13, 0.25));
+}
+
+.bazaar-brand-tag,
+.market-kicker,
+.market-title,
+.market-card-title,
+.market-price,
+.market-input-label,
+.market-label {
+  font-family: "Courier New", "Lucida Console", monospace;
+}
+
+.bazaar-brand-tag {
+  display: inline-block;
+  padding: 5px 8px;
+  border: 2px solid var(--bazaar-ink);
+  background: var(--bazaar-gold);
+  box-shadow: 3px 3px 0 var(--bazaar-ink);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bazaar-nav {
+  flex-shrink: 0;
+}
+
+.bazaar-nav-button,
+.market-action-button,
+.market-card-button,
+.market-back-button {
+  border: 2px solid var(--bazaar-ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--bazaar-ink);
+  font-family: "Courier New", "Lucida Console", monospace;
+  font-weight: 700;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.bazaar-nav-button:hover,
+.market-action-button:hover,
+.market-card-button:hover,
+.market-back-button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--bazaar-ink);
+}
+
+.bazaar-nav-button {
+  color: var(--bazaar-ink);
+  background: #ffffff;
+}
+
+.bazaar-nav-button-primary,
+.market-action-button {
+  color: #ffffff;
+  background: var(--bazaar-red);
+}
+
+.market-back-button {
+  color: var(--bazaar-red);
+  background: #ffffff;
+}
+
+.bazaar-ticker {
+  overflow: hidden;
+  height: 32px;
+  border: 2px solid var(--bazaar-ink);
+  background: var(--bazaar-ink);
+  color: var(--bazaar-gold);
+  box-shadow: 3px 3px 0 var(--bazaar-red);
+  font-family: "Courier New", "Lucida Console", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 30px;
+  white-space: nowrap;
+}
+
+.bazaar-ticker span {
+  display: inline-block;
+  min-width: 200%;
+  animation: bazaar-ticker-scroll 18s linear infinite;
+}
+
+.bazaar-charms {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 28px;
+  overflow: hidden;
+}
+
+.bazaar-charms span {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 2px solid var(--bazaar-ink);
+  color: #ffffff;
+  background: var(--bazaar-red);
+  box-shadow: 2px 2px 0 var(--bazaar-ink);
+  font-family: "Courier New", "Lucida Console", monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bazaar-main {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 68px;
+}
+
+.bazaar-main > * {
+  position: relative;
+  z-index: 2;
+}
+
+.market-page {
+  position: relative;
+  scroll-margin-top: 168px;
+  padding-bottom: 72px;
+}
+
+.market-heading {
+  padding: 18px;
+  border: 3px solid var(--bazaar-ink);
+  background:
+    linear-gradient(90deg, rgba(226, 59, 26, 0.24), transparent 34%),
+    repeating-linear-gradient(135deg, rgba(226, 59, 26, 0.08) 0 8px, transparent 8px 16px), rgba(255, 248, 220, 0.95);
+  box-shadow: 6px 6px 0 var(--bazaar-shadow);
+}
+
+.market-kicker {
+  margin-bottom: 8px;
+  color: var(--bazaar-blue);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.market-title {
+  color: var(--bazaar-ink);
+  text-shadow:
+    2px 2px 0 var(--bazaar-gold),
+    4px 4px 0 rgba(226, 59, 26, 0.35);
+}
+
+.market-card,
+.market-detail-card,
+.market-form-card {
+  border: 3px solid var(--bazaar-ink);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(255, 212, 71, 0.24), transparent 58px), var(--bazaar-card);
+  box-shadow: 7px 7px 0 var(--bazaar-shadow);
+}
+
+.market-card {
+  position: relative;
+  overflow: visible;
+}
+
+.market-card::before {
+  position: absolute;
+  top: -13px;
+  left: 14px;
+  right: 14px;
+  height: 22px;
+  border: 3px solid var(--bazaar-ink);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bazaar-red) 0 26px,
+    var(--bazaar-gold) 26px 42px,
+    #ffffff 42px 56px,
+    var(--bazaar-red) 56px 78px,
+    var(--bazaar-cyan) 78px 92px
+  );
+  content: "";
+}
+
+.market-card:hover {
+  animation: bazaar-card-wiggle 220ms ease-in-out;
+}
+
+.market-card-image {
+  width: 100%;
+  height: 180px;
+  border: 3px solid var(--bazaar-ink);
+  border-radius: 0;
+  background: #f8f0d4;
+  image-rendering: auto;
+  object-fit: cover;
+}
+
+.market-detail-image {
+  width: 100%;
+  height: 360px;
+  border: 3px solid var(--bazaar-ink);
+  border-radius: 0;
+  background: repeating-linear-gradient(45deg, rgba(36, 84, 214, 0.12) 0 8px, transparent 8px 16px), #fffdf0;
+  object-fit: contain;
+}
+
+.market-detail-panel {
+  padding: 12px;
+  border: 2px dashed var(--bazaar-red);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.market-card-title {
+  font-size: 18px;
+}
+
+.market-card-description,
+.market-detail-text {
+  color: #442414;
+}
+
+.market-status-badge,
+.market-category-badge {
+  --badge-bd: 2px solid var(--bazaar-ink);
+  border: 2px solid var(--bazaar-ink);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 var(--bazaar-ink);
+  font-family: "Courier New", "Lucida Console", monospace;
+}
+
+.market-status-badge {
+  --badge-bg: var(--bazaar-green);
+  --badge-color: #ffffff;
+  color: #ffffff;
+  background: var(--bazaar-green);
+  background-color: var(--bazaar-green);
+}
+
+.market-status-badge .mantine-Badge-label {
+  color: #ffffff;
+}
+
+.market-category-badge {
+  --badge-bg: var(--bazaar-cyan);
+  --badge-color: var(--bazaar-ink);
+  color: var(--bazaar-ink);
+  background: var(--bazaar-cyan);
+  background-color: var(--bazaar-cyan);
+}
+
+.market-category-badge .mantine-Badge-label {
+  color: var(--bazaar-ink);
+}
+
+.market-price {
+  display: inline-block;
+  padding: 4px 8px;
+  border: 2px solid var(--bazaar-ink);
+  background: var(--bazaar-gold);
+  box-shadow: 2px 2px 0 var(--bazaar-ink);
+}
+
+.market-card-button {
+  color: var(--bazaar-ink);
+  background: #ffffff;
+}
+
+.market-divider {
+  border-color: var(--bazaar-ink);
+}
+
+.market-label {
+  color: var(--bazaar-red);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.market-input {
+  border: 2px solid var(--bazaar-ink);
+  border-radius: 0;
+  background: #fffdf0;
+  box-shadow: 3px 3px 0 rgba(33, 19, 13, 0.22);
+}
+
+.market-input:focus {
+  border-color: var(--bazaar-red);
+  box-shadow: 3px 3px 0 var(--bazaar-gold);
+}
+
+.market-input-label {
+  color: var(--bazaar-ink);
+  font-weight: 700;
+}
+
+.market-file-box {
+  padding: 10px;
+  border: 2px dashed var(--bazaar-ink);
+  background: rgba(255, 212, 71, 0.2);
+}
+
+.market-file-input {
+  width: 100%;
+  padding: 8px;
+  border: 2px solid var(--bazaar-ink);
+  background: #ffffff;
+  font-family: "Courier New", "Lucida Console", monospace;
+}
+
+.nyan-cat {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  width: 92px;
+  height: auto;
+  image-rendering: pixelated;
+  pointer-events: none;
+  animation: nyan-float 1.8s ease-in-out infinite;
+}
+
+.pixel-firework {
+  position: absolute;
+  z-index: 1;
+  width: 58px;
+  height: 58px;
+  image-rendering: pixelated;
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+.pixel-firework-left {
+  top: 8px;
+  left: min(34vw, 360px);
+}
+
+.pixel-firework-right {
+  top: 8px;
+  right: min(34vw, 360px);
+}
+
+.bazaar-side-decor {
+  position: fixed;
+  top: 220px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.bazaar-side-decor-left {
+  left: 14px;
+}
+
+.bazaar-side-decor-right {
+  right: 14px;
+}
+
+.bazaar-decor-token {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 5px 7px;
+  border: 2px solid var(--bazaar-ink);
+  color: var(--bazaar-ink);
+  background: var(--bazaar-gold);
+  box-shadow: 3px 3px 0 var(--bazaar-ink);
+  font-family: "Courier New", "Lucida Console", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bazaar-decor-token:nth-child(even) {
+  background: #fff8dc;
+}
+
+.bazaar-decor-token img {
+  image-rendering: pixelated;
+}
+
+@media (max-width: 640px) {
+  .bazaar-brand-tag {
+    display: none;
+  }
+
+  .bazaar-nav {
+    gap: 4px;
+  }
+
+  .bazaar-nav-button {
+    padding-inline: 8px;
+    font-size: 12px;
+  }
+
+  .market-heading {
+    align-items: flex-start;
+  }
+
+  .market-detail-image {
+    height: 280px;
+  }
+
+  .nyan-cat {
+    width: 70px;
+  }
+
+  .pixel-firework {
+    display: none;
+  }
+
+  .bazaar-side-decor {
+    display: none;
+  }
+}
