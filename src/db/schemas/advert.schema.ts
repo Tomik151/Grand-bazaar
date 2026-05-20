@@ -7,6 +7,7 @@ export const advert = sqliteTable("advert", {
   cena: integer().notNull(),
   kategorie: text().notNull(),
   status: text().notNull(),
+  obrazek: text(),
 });
 
 export type Advert = typeof advert.$inferSelect;
