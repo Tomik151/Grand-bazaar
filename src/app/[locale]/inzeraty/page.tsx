@@ -3,6 +3,7 @@ import Image from "next/image";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
 import { getAdvertImageSrc } from "@/helpers/advert-image";
+import { getAdvertStatusBadgeClassName } from "@/helpers/advert-status";
 import { Link } from "@/i18n/navigation";
 
 export default function InzeratyPage() {
@@ -30,21 +31,21 @@ export default function InzeratyPage() {
                 <Image className="market-card-image" src={imageSrc} alt={inzerat.titul} width={400} height={240} />
               ) : null}
 
-              <Stack gap="sm" h="100%" mt="sm">
-                <Group justify="space-between">
+              <Stack gap="sm" h="100%" mt="sm" className="market-card-body">
+                <div className="market-card-header">
                   <Text fw={700} className="market-card-title">
                     {inzerat.titul}
                   </Text>
-                  <Badge variant="filled" className="market-status-badge">
+                  <Badge variant="filled" className={getAdvertStatusBadgeClassName(inzerat.status)}>
                     {inzerat.status}
                   </Badge>
-                </Group>
+                </div>
 
-                <Text size="sm" lineClamp={3} mih={60} className="market-card-description">
+                <Text lineClamp={3} className="market-card-description">
                   {inzerat.popis}
                 </Text>
 
-                <Group justify="space-between">
+                <Group justify="space-between" align="center" className="market-card-meta">
                   <Badge variant="filled" className="market-category-badge">
                     {inzerat.kategorie}
                   </Badge>
@@ -53,7 +54,7 @@ export default function InzeratyPage() {
                   </Text>
                 </Group>
 
-                <div style={{ flex: 1 }} />
+                <div className="market-card-spacer" />
 
                 <Link href={`/inzeraty/${inzerat.id}`}>
                   <Button variant="light" fullWidth className="market-card-button">

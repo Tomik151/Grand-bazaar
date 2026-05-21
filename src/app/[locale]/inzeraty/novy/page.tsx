@@ -63,6 +63,8 @@ async function createAdvert(formData: FormData) {
   const isZdarma = formData.get("zdarma") === "on";
   const kategorie = String(formData.get("kategorie") ?? "").trim();
   const status = String(formData.get("status") ?? "").trim();
+  const kontaktJmeno = String(formData.get("kontaktJmeno") ?? "").trim();
+  const kontaktEmail = String(formData.get("kontaktEmail") ?? "").trim();
   const obrazek = await saveAdvertImage(formData.get("obrazekSoubor"));
 
   db.insert(advert)
@@ -72,6 +74,8 @@ async function createAdvert(formData: FormData) {
       cena: isZdarma ? 0 : rawCena,
       kategorie,
       status,
+      kontaktJmeno,
+      kontaktEmail,
       obrazek,
     })
     .run();
@@ -145,6 +149,25 @@ export default function NovyInzeratPage() {
               />
               <Checkbox name="zdarma" label="Nabidka je zdarma" mb={10} />
             </Group>
+
+            <SimpleGrid cols={{ base: 1, sm: 2 }}>
+              <TextInput
+                name="kontaktJmeno"
+                label="Jmeno kontaktu"
+                placeholder="Tvoje jmeno"
+                classNames={{ input: "market-input", label: "market-input-label" }}
+                required
+              />
+
+              <TextInput
+                name="kontaktEmail"
+                label="E-mail"
+                type="email"
+                placeholder="jmeno@example.com"
+                classNames={{ input: "market-input", label: "market-input-label" }}
+                required
+              />
+            </SimpleGrid>
 
             <SimpleGrid cols={{ base: 1, sm: 2 }}>
               <NativeSelect

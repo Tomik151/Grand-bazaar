@@ -29,7 +29,11 @@ export function PageLayout({ children }: PropsWithChildren) {
           <Group h="72px" align="center" justify="space-between" wrap="nowrap">
             <div className="bazaar-brand">
               <PageLogo />
-              <span className="bazaar-brand-tag">Grand Bazaar 2003</span>
+            </div>
+
+            <div className="bazaar-main-title">
+              <span>Grand</span>
+              <span>Bazaar</span>
             </div>
 
             <Group gap="xs" className="bazaar-nav">

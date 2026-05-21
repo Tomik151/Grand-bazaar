@@ -1,11 +1,33 @@
 import { Badge, Button, Card, Divider, Group, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
 import { getAdvertImageSrc } from "@/helpers/advert-image";
+import { getAdvertStatusBadgeClassName } from "@/helpers/advert-status";
 import { Link } from "@/i18n/navigation";
+
+async function updateAdvertStatus(formData: FormData) {
+  "use server";
+
+  const id = Number(formData.get("id"));
+  const status = String(formData.get("status") ?? "");
+
+  if (!Number.isInteger(id)) {
+    return;
+  }
+
+  if (!["Dostupne", "Rezervovano", "Prodano"].includes(status)) {
+    return;
+  }
+
+  db.update(advert).set({ status }).where(eq(advert.id, id)).run();
+
+  revalidatePath("/[locale]/inzeraty/[id]", "page");
+  revalidatePath("/[locale]/inzeraty", "page");
+}
 
 export default async function InzeratDetailPage({ params }: PageProps<"/[locale]/inzeraty/[id]">) {
   const { id } = await params;
@@ -42,7 +64,7 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
               <Title order={1} className="market-title">
                 {inzerat.titul}
               </Title>
-              <Badge variant="filled" className="market-status-badge">
+              <Badge variant="filled" className={getAdvertStatusBadgeClassName(inzerat.status)}>
                 {inzerat.status}
               </Badge>
             </Group>
@@ -58,7 +80,17 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
 
             <Divider className="market-divider" />
 
-            <Group justify="space-between">
+            <Stack gap="xs">
+              <Text size="sm" className="market-label">
+                Kontakt
+              </Text>
+              <Text className="market-detail-text">{inzerat.kontaktJmeno}</Text>
+              <Text className="market-detail-text">{inzerat.kontaktEmail}</Text>
+            </Stack>
+
+            <Divider className="market-divider" />
+
+            <Group justify="space-between" align="flex-start">
               <Stack gap={4}>
                 <Text size="sm" className="market-label">
                   Kategorie
@@ -77,6 +109,32 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
                 </Text>
               </Stack>
             </Group>
+
+            <Divider className="market-divider" />
+
+            <Stack gap="xs">
+              <Text size="sm" className="market-label">
+                Zmenit stav
+              </Text>
+
+              <Group>
+                <form action={updateAdvertStatus}>
+                  <input type="hidden" name="id" value={inzerat.id} />
+                  <input type="hidden" name="status" value="Rezervovano" />
+                  <Button type="submit" className="market-card-button">
+                    Rezervovat
+                  </Button>
+                </form>
+
+                <form action={updateAdvertStatus}>
+                  <input type="hidden" name="id" value={inzerat.id} />
+                  <input type="hidden" name="status" value="Prodano" />
+                  <Button type="submit" className="market-action-button">
+                    Prodano
+                  </Button>
+                </form>
+              </Group>
+            </Stack>
           </Stack>
         </SimpleGrid>
       </Card>
