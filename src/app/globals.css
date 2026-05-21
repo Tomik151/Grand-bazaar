@@ -122,7 +122,7 @@ a {
   filter: drop-shadow(3px 3px 0 rgba(33, 19, 13, 0.25));
 }
 
-.bazaar-brand-tag,
+.bazaar-main-title,
 .market-kicker,
 .market-title,
 .market-card-title,
@@ -132,15 +132,39 @@ a {
   font-family: "Courier New", "Lucida Console", monospace;
 }
 
-.bazaar-brand-tag {
-  display: inline-block;
-  padding: 5px 8px;
-  border: 2px solid var(--bazaar-ink);
-  background: var(--bazaar-gold);
-  box-shadow: 3px 3px 0 var(--bazaar-ink);
-  font-size: 12px;
+.bazaar-main-title {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 7px 18px;
+  border: 4px solid var(--bazaar-ink);
+  color: var(--bazaar-ink);
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 212, 71, 0.4) 0 12px, rgba(255, 248, 220, 0.86) 12px 24px),
+    var(--bazaar-card);
+  box-shadow:
+    5px 5px 0 var(--bazaar-shadow),
+    inset 0 -5px 0 rgba(226, 59, 26, 0.26);
+  font-size: 38px;
   font-weight: 700;
+  line-height: 1;
   text-transform: uppercase;
+  transform: translateX(-50%);
+  text-shadow:
+    2px 2px 0 var(--bazaar-gold),
+    4px 4px 0 rgba(226, 59, 26, 0.55);
+  white-space: nowrap;
+}
+
+.bazaar-main-title span:last-child {
+  color: var(--bazaar-red);
+  text-shadow:
+    2px 2px 0 var(--bazaar-gold),
+    4px 4px 0 var(--bazaar-ink);
 }
 
 .bazaar-nav {
@@ -312,6 +336,22 @@ a {
   object-fit: cover;
 }
 
+.market-card-body {
+  display: flex;
+  flex: 1;
+}
+
+.market-card-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: 12px;
+  align-items: start;
+  height: 82px;
+  padding: 10px;
+  border: 2px solid rgba(33, 19, 13, 0.72);
+  background: linear-gradient(90deg, rgba(255, 212, 71, 0.32), transparent 58%), rgba(255, 255, 255, 0.36);
+}
+
 .market-detail-image {
   width: 100%;
   height: 360px;
@@ -328,12 +368,40 @@ a {
 }
 
 .market-card-title {
-  font-size: 18px;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 22px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .market-card-description,
 .market-detail-text {
   color: #442414;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.market-card-description {
+  height: 108px;
+  padding: 10px;
+  border: 2px dashed rgba(33, 19, 13, 0.6);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.market-detail-text {
+  font-size: 19px;
+}
+
+.market-card-meta {
+  min-height: 46px;
+  padding: 6px 0;
+}
+
+.market-card-spacer {
+  flex: 1;
 }
 
 .market-status-badge,
@@ -348,18 +416,52 @@ a {
 .market-status-badge {
   --badge-bg: var(--bazaar-green);
   --badge-color: #ffffff;
+  min-height: 34px;
+  padding-inline: 12px;
   color: #ffffff;
+  background: var(--bazaar-green);
+  background-color: var(--bazaar-green);
+  font-size: 14px;
+}
+
+.market-status-badge-available {
+  --badge-bg: var(--bazaar-green);
   background: var(--bazaar-green);
   background-color: var(--bazaar-green);
 }
 
+.market-status-badge-reserved {
+  --badge-bg: var(--bazaar-orange);
+  color: var(--bazaar-ink);
+  background: var(--bazaar-orange);
+  background-color: var(--bazaar-orange);
+}
+
+.market-status-badge-sold {
+  --badge-bg: var(--bazaar-red);
+  background: var(--bazaar-red);
+  background-color: var(--bazaar-red);
+}
+
 .market-status-badge .mantine-Badge-label {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.market-status-badge-reserved .mantine-Badge-label {
+  color: var(--bazaar-ink);
+}
+
+.market-status-badge-available .mantine-Badge-label,
+.market-status-badge-sold .mantine-Badge-label {
   color: #ffffff;
 }
 
 .market-category-badge {
   --badge-bg: var(--bazaar-cyan);
   --badge-color: var(--bazaar-ink);
+  min-height: 30px;
+  padding-inline: 10px;
   color: var(--bazaar-ink);
   background: var(--bazaar-cyan);
   background-color: var(--bazaar-cyan);
@@ -367,14 +469,17 @@ a {
 
 .market-category-badge .mantine-Badge-label {
   color: var(--bazaar-ink);
+  font-size: 13px;
 }
 
 .market-price {
   display: inline-block;
-  padding: 4px 8px;
+  padding: 6px 10px;
   border: 2px solid var(--bazaar-ink);
   background: var(--bazaar-gold);
   box-shadow: 2px 2px 0 var(--bazaar-ink);
+  font-size: 18px;
+  line-height: 1.2;
 }
 
 .market-card-button {
@@ -388,6 +493,7 @@ a {
 
 .market-label {
   color: var(--bazaar-red);
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -497,8 +603,10 @@ a {
 }
 
 @media (max-width: 640px) {
-  .bazaar-brand-tag {
-    display: none;
+  .bazaar-main-title {
+    top: 18px;
+    padding: 5px 10px;
+    font-size: 24px;
   }
 
   .bazaar-nav {
