@@ -510,6 +510,15 @@ a {
   box-shadow: 3px 3px 0 var(--bazaar-gold);
 }
 
+.mantine-Input-input.market-input:disabled,
+.market-input:disabled {
+  border-color: rgba(33, 19, 13, 0.46);
+  color: rgba(33, 19, 13, 0.54);
+  background: repeating-linear-gradient(45deg, rgba(33, 19, 13, 0.08) 0 8px, transparent 8px 16px), #d8d0bd;
+  box-shadow: 2px 2px 0 rgba(33, 19, 13, 0.34);
+  cursor: not-allowed;
+}
+
 .market-input-label {
   color: var(--bazaar-ink);
   font-weight: 700;
@@ -636,5 +645,122 @@ a {
 
   .bazaar-side-decor {
     display: none;
+  }
+}
+
+/* Custom Turkish Retro Bazaar Search Bar styles */
+.bazaar-search-card {
+  position: relative;
+  border: 3px solid var(--bazaar-ink);
+  background:
+    repeating-linear-gradient(45deg, rgba(226, 59, 26, 0.04) 0 6px, transparent 6px 12px),
+    linear-gradient(180deg, rgba(255, 212, 71, 0.3) 0%, transparent 60px), var(--bazaar-card);
+  box-shadow: 7px 7px 0 var(--bazaar-shadow);
+  padding: 24px 20px 20px 20px;
+  overflow: visible;
+  margin-bottom: 8px;
+}
+
+/* Beautiful oriental carpet-fringe top banner */
+.bazaar-search-card::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  right: 12px;
+  height: 16px;
+  border: 2px solid var(--bazaar-ink);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bazaar-red) 0 16px,
+    var(--bazaar-gold) 16px 28px,
+    var(--bazaar-cyan) 28px 40px,
+    var(--bazaar-orange) 40px 52px
+  );
+}
+
+.bazaar-search-header {
+  margin-top: 4px;
+  margin-bottom: 16px;
+  text-align: center;
+  border-bottom: 2px dashed rgba(33, 19, 13, 0.3);
+  padding-bottom: 12px;
+}
+
+.bazaar-search-title-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.bazaar-search-icon {
+  font-size: 24px;
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.15));
+}
+
+.bazaar-search-title {
+  color: var(--bazaar-ink);
+  font-family: "Courier New", "Lucida Console", monospace;
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 var(--bazaar-gold);
+  margin: 0;
+}
+
+.bazaar-search-subtitle {
+  color: #5a3825;
+  font-family: "Courier New", "Lucida Console", monospace;
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.bazaar-search-form {
+  width: 100%;
+}
+
+.bazaar-search-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.bazaar-search-input-wrapper {
+  flex: 1;
+}
+
+/* Specific selector override for our custom search button */
+button.market-action-button.bazaar-search-button {
+  height: 48px;
+  padding-inline: 24px;
+  font-size: 16px;
+  white-space: nowrap;
+  background-color: var(--bazaar-red);
+  border: 2px solid var(--bazaar-ink);
+  box-shadow: 4px 4px 0 var(--bazaar-ink);
+  margin-top: 0;
+}
+
+button.market-action-button.bazaar-search-button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--bazaar-ink);
+}
+
+@media (max-width: 640px) {
+  .bazaar-search-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  button.market-action-button.bazaar-search-button {
+    width: 100%;
+  }
+
+  .bazaar-search-title {
+    font-size: 18px;
   }
 }

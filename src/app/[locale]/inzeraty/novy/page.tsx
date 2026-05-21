@@ -1,20 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
-import {
-  Button,
-  Card,
-  Checkbox,
-  Group,
-  NativeSelect,
-  SimpleGrid,
-  Stack,
-  Text,
-  Textarea,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Button, Card, Group, NativeSelect, SimpleGrid, Stack, Text, Textarea, TextInput, Title } from "@mantine/core";
 import { redirect } from "next/navigation";
+import { AdvertPriceInput } from "@/components/adverts/AdvertPriceInput";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
 import { Link } from "@/i18n/navigation";
@@ -136,19 +125,7 @@ export default function NovyInzeratPage() {
               <option value="Ostatni">Ostatni</option>
             </NativeSelect>
 
-            <Group align="end" gap="lg">
-              <TextInput
-                name="cena"
-                label="Cena"
-                type="number"
-                min={0}
-                defaultValue={0}
-                rightSection="Kc"
-                w={400}
-                classNames={{ input: "market-input", label: "market-input-label" }}
-              />
-              <Checkbox name="zdarma" label="Nabidka je zdarma" mb={10} />
-            </Group>
+            <AdvertPriceInput />
 
             <SimpleGrid cols={{ base: 1, sm: 2 }}>
               <TextInput
