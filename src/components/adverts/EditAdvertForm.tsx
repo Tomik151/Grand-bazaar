@@ -13,16 +13,31 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useState } from "react";
-import { updateAdvertAction } from "@/app/[locale]/inzeraty/[id]/upravit/edit-action";
+import { deleteAdvertAction, updateAdvertAction } from "@/app/[locale]/inzeraty/[id]/upravit/edit-action";
 import type { Advert } from "@/db/schemas";
 import { Link } from "@/i18n/navigation";
 
 interface EditAdvertFormProps {
   inzerat: Advert;
+  locale: string;
 }
-export function EditAdvertForm({ inzerat }: EditAdvertFormProps) {
+export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    const potvrdit = window.confirm("Opravdu chcete smazat tento inzerát?");
+    if (!potvrdit) return;
+
+    setDeleting(true);
+    try {
+      await deleteAdvertAction(inzerat.id, locale);
+    } catch (error) {
+      console.error("Chyba při mazání:", error);
+      setDeleting(false);
+    }
+  };
   // 1. Nastavení Mantine useForm - předvyplnění hodnot a pravidla validace
   const form = useForm({
     initialValues: {
@@ -93,7 +108,9 @@ export function EditAdvertForm({ inzerat }: EditAdvertFormProps) {
           <Textarea
             label="Popis"
             placeholder="Popiš stav věci, rozměry..."
-            minRows={4}
+            autosize
+            minRows={6}
+            maxRows={15}
             classNames={{ input: "market-input", label: "market-input-label" }}
             required
             {...form.getInputProps("popis")}
@@ -165,7 +182,10 @@ export function EditAdvertForm({ inzerat }: EditAdvertFormProps) {
               <option value="Prodano">Prodáno</option>
             </NativeSelect>
           </SimpleGrid>
-          <Group justify="flex-end">
+          <Group justify="space-between">
+            <Button type="button" className="market-delete-button" onClick={handleDelete} loading={deleting}>
+              Smazat inzerát ❌
+            </Button>
             <Button type="submit" className="market-action-button" loading={loading}>
               Uložit změny
             </Button>

@@ -2,6 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
 
@@ -32,4 +33,16 @@ export async function updateAdvertAction(
 
   revalidatePath("/[locale]/inzeraty/[id]", "page");
   revalidatePath("/[locale]/inzeraty", "page");
+}
+
+// Serverová akce pro smazání inzerátu
+export async function deleteAdvertAction(id: number, locale: string) {
+  // 1. Smažeme inzerát z SQLite databáze
+  db.delete(advert).where(eq(advert.id, id)).run();
+
+  // 2. Vymažeme mezipaměť (cache) seznamu inzerátů
+  revalidatePath("/[locale]/inzeraty", "page");
+
+  // 3. Přesměrujeme uživatele na hlavní stránku tržiště podle aktuálního jazyka
+  redirect(`/${locale}/inzeraty`);
 }
