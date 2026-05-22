@@ -60,13 +60,20 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
           ) : null}
 
           <Stack gap="md" className="market-detail-panel">
-            <Group justify="space-between">
+            <Group justify="space-between" align="center">
               <Title order={1} className="market-title">
                 {inzerat.titul}
               </Title>
-              <Badge variant="filled" className={getAdvertStatusBadgeClassName(inzerat.status)}>
-                {inzerat.status}
-              </Badge>
+              <Group gap="sm">
+                <Badge variant="filled" className={getAdvertStatusBadgeClassName(inzerat.status)}>
+                  {inzerat.status}
+                </Badge>
+                <Link href={`/inzeraty/${inzerat.id}/upravit`}>
+                  <Button variant="outline" className="market-card-button">
+                    Upravit
+                  </Button>
+                </Link>
+              </Group>
             </Group>
 
             <Divider className="market-divider" />
