@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Group, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Badge, Button, Card, Checkbox, Group, Select, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
 import Image from "next/image";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
@@ -6,40 +6,39 @@ import { getAdvertImageSrc } from "@/helpers/advert-image";
 import { getAdvertStatusBadgeClassName } from "@/helpers/advert-status";
 import { Link } from "@/i18n/navigation";
 
+function normalizeValue(value: string | null | undefined): string {
+  if (!value) return "";
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
 export default async function InzeratyPage({ params, searchParams }: PageProps<"/[locale]/inzeraty">) {
   const { locale } = await params;
 
-  // Vytáhneme z URL adresy všechny parametry, které budeme filtrovat
+  // 1. Načtení všech parametrů z URL adresy
   const { q, kategorie, stav, zdarma } = await searchParams;
-
   const searchQuery = String(q ?? "")
     .trim()
     .toLowerCase();
   const selectedKategorie = String(kategorie ?? "");
   const selectedStav = String(stav ?? "");
-  const onlyZdarma = zdarma === "true"; // V URL bude hodnota jako text "true"
+  const onlyZdarma = zdarma === "true";
 
   const inzeraty = db.select().from(advert).all();
 
+  // 2. Filtrování inzerátů na základě vybraných hodnot
   const filteredInzeraty = inzeraty.filter((inzerat) => {
-    // 1. Vyhledávání v názvu a popisu (už máme hotové)
     const title = inzerat.titul.toLowerCase();
     const description = inzerat.popis.toLowerCase();
+
     const matchesSearch = title.includes(searchQuery) || description.includes(searchQuery);
-
-    // 2. Filtrování podle kategorie
-    // Pokud uživatel nevybral žádnou kategorii (selectedKategorie je prázdná ""),
-    // propustíme všechny. Jinak se musí shodovat s kategorií inzerátu.
-    const matchesKategorie = !selectedKategorie || inzerat.kategorie === selectedKategorie;
-
-    // 3. Filtrování podle stavu
-    const matchesStav = !selectedStav || inzerat.status === selectedStav;
-
-    // 4. Filtrování podle ceny (Zdarma)
-    // Pokud je zaškrtnuté "Pouze zdarma", inzerát musí mít cenu rovnou 0.
+    const matchesKategorie =
+      !selectedKategorie || normalizeValue(inzerat.kategorie) === normalizeValue(selectedKategorie);
+    const matchesStav = !selectedStav || normalizeValue(inzerat.status) === normalizeValue(selectedStav);
     const matchesZdarma = !onlyZdarma || inzerat.cena === 0;
 
-    // Inzerát se zobrazí pouze tehdy, pokud splní VŠECHNY čtyři podmínky zároveň
     return matchesSearch && matchesKategorie && matchesStav && matchesZdarma;
   });
 
@@ -55,6 +54,7 @@ export default async function InzeratyPage({ params, searchParams }: PageProps<"
         </Link>
       </Group>
 
+      {/* Turecký Retro Bazar vyhledávací box s filtry */}
       <div className="bazaar-search-card">
         <div className="bazaar-search-header">
           <div className="bazaar-search-title-group">
@@ -70,27 +70,80 @@ export default async function InzeratyPage({ params, searchParams }: PageProps<"
         </div>
 
         <form action={`/${locale}/inzeraty`} className="bazaar-search-form">
-          <div className="bazaar-search-row">
-            <TextInput
-              name="q"
-              placeholder="🔍 Hledej koření, koberce, čaj, elektroniku..."
-              defaultValue={searchQuery}
-              className="bazaar-search-input-wrapper"
-              styles={{
-                input: {
-                  height: 48,
-                  fontSize: 16,
-                  fontFamily: '"Courier New", "Lucida Console", monospace',
-                  fontWeight: 700,
-                  paddingLeft: 14,
-                },
-              }}
-              classNames={{ input: "market-input" }}
-            />
-            <Button type="submit" className="market-action-button bazaar-search-button">
-              Najít zboží (Ara!)
-            </Button>
-          </div>
+          <Stack gap="md">
+            <div className="bazaar-search-row">
+              <TextInput
+                name="q"
+                placeholder="🔍 Hledej koření, koberce, čaj, elektroniku..."
+                defaultValue={searchQuery}
+                className="bazaar-search-input-wrapper"
+                styles={{
+                  input: {
+                    height: 48,
+                    fontSize: 16,
+                    fontFamily: '"Courier New", "Lucida Console", monospace',
+                    fontWeight: 700,
+                    paddingLeft: 14,
+                  },
+                }}
+                classNames={{ input: "market-input" }}
+              />
+              <Button type="submit" className="market-action-button bazaar-search-button">
+                Najít zboží (Ara!)
+              </Button>
+            </div>
+
+            {/* Filtry pro kategorii, stav a věci zdarma */}
+            <Group grow align="flex-end" gap="sm">
+              <Select
+                name="kategorie"
+                label="Kategorie"
+                placeholder="Všechny kategorie"
+                defaultValue={selectedKategorie}
+                data={[
+                  { label: "Domácnost", value: "Domacnost" },
+                  { label: "Elektronika", value: "Elektronika" },
+                  { label: "Zahrada", value: "Zahrada" },
+                  { label: "Nábytek", value: "Nabytek" },
+                  { label: "Knihy", value: "Knihy" },
+                  { label: "Ostatní", value: "Ostatni" },
+                ]}
+                clearable
+                classNames={{ input: "market-input", label: "market-input-label" }}
+              />
+
+              <Select
+                name="stav"
+                label="Stav"
+                placeholder="Jakýkoliv stav"
+                defaultValue={selectedStav}
+                data={[
+                  { label: "Dostupné", value: "Dostupne" },
+                  { label: "Rezervováno", value: "Rezervovano" },
+                  { label: "Prodáno", value: "Prodano" },
+                ]}
+                clearable
+                classNames={{ input: "market-input", label: "market-input-label" }}
+              />
+
+              <div style={{ paddingBottom: 10 }}>
+                <Checkbox
+                  name="zdarma"
+                  value="true"
+                  label="Pouze věci zdarma"
+                  defaultChecked={onlyZdarma}
+                  color="var(--bazaar-red)"
+                  styles={{
+                    label: {
+                      fontFamily: '"Courier New", "Lucida Console", monospace',
+                      fontWeight: 700,
+                      color: "var(--bazaar-ink)",
+                    },
+                  }}
+                />
+              </div>
+            </Group>
+          </Stack>
         </form>
       </div>
 
