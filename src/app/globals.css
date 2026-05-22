@@ -174,7 +174,8 @@ a {
 .bazaar-nav-button,
 .market-action-button,
 .market-card-button,
-.market-back-button {
+.market-back-button,
+.market-delete-button {
   border: 2px solid var(--bazaar-ink);
   border-radius: 0;
   box-shadow: 3px 3px 0 var(--bazaar-ink);
@@ -188,7 +189,8 @@ a {
 .bazaar-nav-button:hover,
 .market-action-button:hover,
 .market-card-button:hover,
-.market-back-button:hover {
+.market-back-button:hover,
+.market-delete-button:hover {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 var(--bazaar-ink);
 }
@@ -207,6 +209,15 @@ a {
 .market-back-button {
   color: var(--bazaar-red);
   background: #ffffff;
+}
+
+.market-delete-button {
+  color: var(--bazaar-red);
+  background: #ffffff;
+}
+
+.market-delete-button:hover {
+  background: #fff0f0;
 }
 
 .bazaar-ticker {
@@ -292,7 +303,8 @@ a {
 
 .market-card,
 .market-detail-card,
-.market-form-card {
+.market-form-card,
+.market-qr-payment-card {
   border: 3px solid var(--bazaar-ink);
   border-radius: 0;
   background: linear-gradient(180deg, rgba(255, 212, 71, 0.24), transparent 58px), var(--bazaar-card);

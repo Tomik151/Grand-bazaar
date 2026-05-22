@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Divider, Group, SimpleGrid, Stack, Text, Title } from "@mantine/core";
+import { Alert, Badge, Button, Card, Divider, Group, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import Image from "next/image";
@@ -116,6 +116,75 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
                 </Text>
               </Stack>
             </Group>
+
+            {inzerat.cena > 0 ? (
+              <>
+                <Divider className="market-divider" />
+                <Card withBorder padding="md" className="market-qr-payment-card">
+                  <Stack gap="xs">
+                    <Text size="sm" className="market-label" style={{ color: "var(--bazaar-ink)", fontWeight: 700 }}>
+                      QR Platba (Příspěvek prodejci) 🏺
+                    </Text>
+
+                    <Group gap="md" align="center" wrap="nowrap">
+                      <Image
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+                          `SPD*1.0*ACC:CZ5608000000002000123456*AM:${inzerat.cena.toFixed(
+                            2,
+                          )}*CC:CZK*MSG:Inzerat_${inzerat.id}`,
+                        )}`}
+                        alt="QR kód pro platbu"
+                        width={120}
+                        height={120}
+                        style={{
+                          border: "3px solid var(--bazaar-ink)",
+                          boxShadow: "3px 3px 0 var(--bazaar-shadow)",
+                        }}
+                      />
+
+                      <Stack gap={4}>
+                        <Text size="sm" fw={700} className="market-label" style={{ color: "var(--bazaar-red)" }}>
+                          Naskenuj a zaplať 📱
+                        </Text>
+                        <Text size="xs" style={{ lineHeight: 1.4, fontFamily: "monospace", fontWeight: 600 }}>
+                          Tento QR kód je plně funkční standardní CZ QR platba!
+                        </Text>
+                        <Text size="xs" style={{ lineHeight: 1.3, fontFamily: "monospace", fontWeight: 500 }}>
+                          <strong>Účet:</strong> 2000123456/0800
+                          <br />
+                          <strong>Částka:</strong> {inzerat.cena} Kč
+                          <br />
+                          <strong>Zpráva:</strong> Inzerat_{inzerat.id}
+                        </Text>
+                      </Stack>
+                    </Group>
+
+                    <Alert
+                      color="orange"
+                      title="Důležité upozornění"
+                      styles={{
+                        root: {
+                          border: "2px solid var(--bazaar-ink)",
+                          borderRadius: 0,
+                          background: "#fffbf0",
+                          marginTop: 8,
+                        },
+                        title: {
+                          fontFamily: '"Courier New", monospace',
+                          fontWeight: 700,
+                          color: "var(--bazaar-ink)",
+                        },
+                      }}
+                    >
+                      <Text size="xs" style={{ fontFamily: "monospace", fontWeight: 600 }}>
+                        Bazar nezprostředkovává platby. Tento QR kód slouží k usnadnění platby mezi uživateli. Všechny
+                        transakce si kupující a prodávající řeší sami.
+                      </Text>
+                    </Alert>
+                  </Stack>
+                </Card>
+              </>
+            ) : null}
 
             <Divider className="market-divider" />
 

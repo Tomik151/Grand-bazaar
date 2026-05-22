@@ -95,8 +95,8 @@ export default function NovyInzeratPage() {
           <Stack gap="lg">
             <TextInput
               name="titul"
-              label="Nazev veci"
-              placeholder="Napr. konferencni stolek"
+              label="název věci"
+              placeholder="Např. konferenční stolek"
               classNames={{ input: "market-input", label: "market-input-label" }}
               required
             />
@@ -104,8 +104,10 @@ export default function NovyInzeratPage() {
             <Textarea
               name="popis"
               label="Popis"
-              placeholder="Popis stav, rozmery, misto predani..."
-              minRows={4}
+              placeholder="Popis stav, rozměry, místo předání..."
+              autosize
+              minRows={6}
+              maxRows={15}
               classNames={{ input: "market-input", label: "market-input-label" }}
               required
             />
@@ -130,8 +132,8 @@ export default function NovyInzeratPage() {
             <SimpleGrid cols={{ base: 1, sm: 2 }}>
               <TextInput
                 name="kontaktJmeno"
-                label="Jmeno kontaktu"
-                placeholder="Tvoje jmeno"
+                label="Jméno kontaktu"
+                placeholder="Tvoje jméno"
                 classNames={{ input: "market-input", label: "market-input-label" }}
                 required
               />
@@ -149,34 +151,34 @@ export default function NovyInzeratPage() {
             <SimpleGrid cols={{ base: 1, sm: 2 }}>
               <NativeSelect
                 name="status"
-                label="Stav nabidky"
-                defaultValue="Dostupne"
+                label="Stav nabídky"
+                defaultValue="Dostupné"
                 classNames={{ input: "market-input", label: "market-input-label" }}
                 required
               >
-                <option value="Dostupne">Dostupne</option>
-                <option value="Rezervovano">Rezervovano</option>
+                <option value="Dostupne">Dostupné</option>
+                <option value="Rezervovano">Rezervované</option>
                 <option value="Prodano">Prodano</option>
               </NativeSelect>
 
               <Stack gap={6} className="market-file-box">
                 <Text fw={500} size="sm" className="market-input-label">
-                  Obrazek
+                  Obrázek
                 </Text>
                 <input type="file" name="obrazekSoubor" accept="image/*" className="market-file-input" />
                 <Text size="xs" c="dimmed">
-                  Vyber obrazek z pocitace. Aplikace ho ulozi do public/inzeraty.
+                  Vyber obrázek z počítače. Aplikace ho uloží do public/inzeraty.
                 </Text>
               </Stack>
             </SimpleGrid>
 
             <Text size="sm" c="dimmed">
-              Platbu a predani si domluvis primo se zajemcem.
+              Platbu a předání si domluvíš přímo se zájemcem.
             </Text>
 
             <Group justify="flex-end">
               <Button type="submit" className="market-action-button">
-                Pridat nabidku
+                Přidat nabídku
               </Button>
             </Group>
           </Stack>

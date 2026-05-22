@@ -7,7 +7,7 @@ import { advert } from "@/db/schemas";
 import { Link } from "@/i18n/navigation";
 
 export default async function UpravitInzeratPage({ params }: PageProps<"/[locale]/inzeraty/[id]/upravit">) {
-  const { id } = await params;
+  const { id, locale } = await params;
   const advertId = Number(id);
 
   if (!Number.isInteger(advertId)) {
@@ -35,8 +35,8 @@ export default async function UpravitInzeratPage({ params }: PageProps<"/[locale
           </Button>
         </Link>
       </Group>
-      {/* Vykreslíme interaktivní formulář a předáme mu data inzerátu */}
-      <EditAdvertForm inzerat={inzerat} />
+      {/* Vykreslíme interaktivní formulář a předáme mu data inzerátu a locale */}
+      <EditAdvertForm inzerat={inzerat} locale={locale} />
     </Stack>
   );
 }
