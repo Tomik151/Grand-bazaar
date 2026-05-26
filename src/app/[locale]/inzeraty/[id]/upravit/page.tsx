@@ -1,4 +1,4 @@
-import { Button, Group, Stack, Text, Title } from "@mantine/core";
+import { Button, Stack } from "@mantine/core";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { EditAdvertForm } from "@/components/adverts/EditAdvertForm";
@@ -21,20 +21,12 @@ export default async function UpravitInzeratPage({ params }: PageProps<"/[locale
   }
 
   return (
-    <Stack gap="xl" className="market-page">
-      <Group justify="space-between" align="center">
-        <div>
-          <Text className="market-kicker">Edit stall license</Text>
-          <Title order={1} className="market-title">
-            Upravit nabídku
-          </Title>
-        </div>
-        <Link href={`/inzeraty/${inzerat.id}`}>
-          <Button variant="subtle" className="market-back-button">
-            Zpět na detail
-          </Button>
-        </Link>
-      </Group>
+    <Stack gap="xs" className="market-page">
+      <Link href={`/inzeraty/${inzerat.id}`} style={{ width: "fit-content" }}>
+        <Button variant="subtle" className="market-back-button">
+          Zpět na detail
+        </Button>
+      </Link>
       {/* Vykreslíme interaktivní formulář a předáme mu data inzerátu a locale */}
       <EditAdvertForm inzerat={inzerat} locale={locale} />
     </Stack>

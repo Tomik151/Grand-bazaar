@@ -1,8 +1,8 @@
-import { Badge, Button, Card, Checkbox, Group, Select, SimpleGrid, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Badge, Button, Card, Checkbox, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import Image from "next/image";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
-import { getAdvertImageSrc } from "@/helpers/advert-image";
+import { getAdvertImageSources } from "@/helpers/advert-image";
 import { getAdvertStatusBadgeClassName } from "@/helpers/advert-status";
 import { Link } from "@/i18n/navigation";
 
@@ -18,7 +18,9 @@ export default async function InzeratyPage({ params, searchParams }: PageProps<"
   const { locale } = await params;
 
   // 1. Načtení všech parametrů z URL adresy
-  const { q, kategorie, stav, zdarma } = await searchParams;
+  const { q, kategorie, stav, zdarma, page } = await searchParams;
+  const currentPage = Number(page ?? "1");
+  const LIMIT = 9;
   const searchQuery = String(q ?? "")
     .trim()
     .toLowerCase();
@@ -41,19 +43,30 @@ export default async function InzeratyPage({ params, searchParams }: PageProps<"
 
     return matchesSearch && matchesKategorie && matchesStav && matchesZdarma;
   });
+  // 3. Výpočet stránkování (Pagination)
+  const totalCount = filteredInzeraty.length;
+  const totalPages = Math.ceil(totalCount / LIMIT);
 
+  // Zamezíme tomu, aby byla stránka mimo rozsah (např. menší než 1 nebo větší než celkový počet stránek)
+  const activePage = Math.min(Math.max(1, currentPage), Math.max(1, totalPages));
+
+  const startIndex = (activePage - 1) * LIMIT;
+
+  // .slice(od, do) vysekne ze všech inzerátů pouze těch 9 pro naši aktuální stránku
+  const paginatedInzeraty = filteredInzeraty.slice(startIndex, startIndex + LIMIT);
+
+  // Pomocná funkce, která vygeneruje odkaz na jinou stránku a ponechá aktivní filtry
+  const getPageLink = (pageNumber: number) => {
+    const paramsObj = new URLSearchParams();
+    if (q) paramsObj.set("q", String(q));
+    if (kategorie) paramsObj.set("kategorie", String(kategorie));
+    if (stav) paramsObj.set("stav", String(stav));
+    if (zdarma) paramsObj.set("zdarma", String(zdarma));
+    paramsObj.set("page", String(pageNumber));
+    return `/inzeraty?${paramsObj.toString()}`;
+  };
   return (
     <Stack gap="xl" className="market-page">
-      <Group justify="space-between" align="flex-end" className="market-heading">
-        <div>
-          <Text className="market-kicker">Istanbul modem bazaar</Text>
-          <Title className="market-title">Trziste</Title>
-        </div>
-        <Link href="/inzeraty/novy">
-          <Button className="market-action-button">Pridat zbozi</Button>
-        </Link>
-      </Group>
-
       {/* Turecký Retro Bazar vyhledávací box s filtry */}
       <div className="bazaar-search-card">
         <div className="bazaar-search-header">
@@ -103,10 +116,15 @@ export default async function InzeratyPage({ params, searchParams }: PageProps<"
                 data={[
                   { label: "Domácnost", value: "Domacnost" },
                   { label: "Elektronika", value: "Elektronika" },
-                  { label: "Zahrada", value: "Zahrada" },
-                  { label: "Nábytek", value: "Nabytek" },
+                  { label: "Hudba", value: "Hudba" },
                   { label: "Knihy", value: "Knihy" },
+                  { label: "Nábytek", value: "Nabytek" },
+                  { label: "Oblečení", value: "Obleceni" },
                   { label: "Ostatní", value: "Ostatni" },
+                  { label: "Služby", value: "Sluzby" },
+                  { label: "Sport", value: "Sport" },
+                  { label: "Vstupenky", value: "Vstupenky" },
+                  { label: "Zahrada", value: "Zahrada" },
                 ]}
                 clearable
                 classNames={{ input: "market-input", label: "market-input-label" }}
@@ -148,8 +166,9 @@ export default async function InzeratyPage({ params, searchParams }: PageProps<"
       </div>
 
       <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="xl">
-        {filteredInzeraty.map((inzerat) => {
-          const imageSrc = getAdvertImageSrc(inzerat.obrazek);
+        {paginatedInzeraty.map((inzerat) => {
+          const imageSources = getAdvertImageSources(inzerat.obrazek);
+          const imageSrc = imageSources.length > 0 ? imageSources[0] : null;
 
           return (
             <Card key={inzerat.id} padding="lg" withBorder h="100%" className="market-card">
@@ -192,6 +211,50 @@ export default async function InzeratyPage({ params, searchParams }: PageProps<"
           );
         })}
       </SimpleGrid>
+
+      {/* Ovládací panel stránkování */}
+      {totalPages > 1 && (
+        <div className="bazaar-pagination-wrapper">
+          <div className="bazaar-pagination-group">
+            {/* Tlačítko PŘEDCHOZÍ */}
+            {activePage > 1 ? (
+              <Link href={getPageLink(activePage - 1)} className="bazaar-pagination-btn">
+                ◀ Předchozí
+              </Link>
+            ) : (
+              <button type="button" disabled className="bazaar-pagination-btn">
+                ◀ Předchozí
+              </button>
+            )}
+
+            {/* Číselná řada stránek */}
+            {Array.from({ length: totalPages }, (_, i) => {
+              const pageNum = i + 1;
+              const isActive = pageNum === activePage;
+              return (
+                <Link
+                  key={pageNum}
+                  href={getPageLink(pageNum)}
+                  className={`bazaar-pagination-btn ${isActive ? "active" : ""}`}
+                >
+                  {pageNum}
+                </Link>
+              );
+            })}
+
+            {/* Tlačítko DALŠÍ */}
+            {activePage < totalPages ? (
+              <Link href={getPageLink(activePage + 1)} className="bazaar-pagination-btn">
+                Další ▶
+              </Link>
+            ) : (
+              <button type="button" disabled className="bazaar-pagination-btn">
+                Další ▶
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </Stack>
   );
 }

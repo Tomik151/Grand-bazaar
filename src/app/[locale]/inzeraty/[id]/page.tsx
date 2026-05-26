@@ -3,9 +3,10 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { ImageCarousel } from "@/components/adverts/ImageCarousel";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
-import { getAdvertImageSrc } from "@/helpers/advert-image";
+import { getAdvertImageSources } from "@/helpers/advert-image";
 import { getAdvertStatusBadgeClassName } from "@/helpers/advert-status";
 import { Link } from "@/i18n/navigation";
 
@@ -43,7 +44,7 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
     notFound();
   }
 
-  const imageSrc = getAdvertImageSrc(inzerat.obrazek);
+  const imageSources = getAdvertImageSources(inzerat.obrazek);
 
   return (
     <Stack gap="lg" className="market-page">
@@ -55,9 +56,7 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
 
       <Card padding="lg" withBorder className="market-detail-card">
         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-          {imageSrc ? (
-            <Image className="market-detail-image" src={imageSrc} alt={inzerat.titul} width={520} height={360} />
-          ) : null}
+          {imageSources.length > 0 ? <ImageCarousel images={imageSources} alt={inzerat.titul} /> : null}
 
           <Stack gap="md" className="market-detail-panel">
             <Group justify="space-between" align="center">

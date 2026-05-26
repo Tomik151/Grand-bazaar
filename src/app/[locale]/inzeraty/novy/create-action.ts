@@ -3,7 +3,6 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
-import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
@@ -38,7 +37,7 @@ async function saveSingleImage(file: File) {
   return `/inzeraty/${fileName}`;
 }
 
-export async function updateAdvertAction(id: number, locale: string, formData: FormData) {
+export async function createAdvertAction(locale: string, formData: FormData) {
   // A. Vytáhneme textové hodnoty z FormData
   const titul = String(formData.get("titul") ?? "").trim();
   const popis = String(formData.get("popis") ?? "").trim();
@@ -48,11 +47,7 @@ export async function updateAdvertAction(id: number, locale: string, formData: F
   const kontaktJmeno = String(formData.get("kontaktJmeno") ?? "").trim();
   const kontaktEmail = String(formData.get("kontaktEmail") ?? "").trim();
 
-  // B. Načteme seznam zachovaných starých obrázků (JSON pole)
-  const stareCestyJson = String(formData.get("stareCestyJson") ?? "[]");
-  const stareCesty: string[] = JSON.parse(stareCestyJson);
-
-  // C. Získáme a uložíme nově nahrané soubory na disk
+  // B. Získáme a uložíme nově nahrané soubory na disk v pořadí, v jakém byly seřazené
   const noveSoubory = formData.getAll("noveObrazkySoubory") as File[];
   const noveUlozeneCesty: string[] = [];
 
@@ -63,12 +58,9 @@ export async function updateAdvertAction(id: number, locale: string, formData: F
     }
   }
 
-  // D. Sloučíme staré a nové cesty do jednoho výsledného pole
-  const finalniPoleObrazku = [...stareCesty, ...noveUlozeneCesty];
-
-  // E. Aktualizujeme inzerát v SQLite databázi
-  db.update(advert)
-    .set({
+  // C. Aktualizujeme inzerát v SQLite databázi
+  db.insert(advert)
+    .values({
       titul,
       popis,
       cena,
@@ -76,19 +68,11 @@ export async function updateAdvertAction(id: number, locale: string, formData: F
       status,
       kontaktJmeno,
       kontaktEmail,
-      obrazek: finalniPoleObrazku.length > 0 ? JSON.stringify(finalniPoleObrazku) : null,
+      obrazek: noveUlozeneCesty.length > 0 ? JSON.stringify(noveUlozeneCesty) : null,
     })
-    .where(eq(advert.id, id))
     .run();
 
-  // F. Vymažeme mezipaměť (cache), aby se změny ihned promítly na webu
-  revalidatePath(`/${locale}/inzeraty/${id}`);
+  // D. Vymažeme mezipaměť a přesměrujeme zpět na přehled
   revalidatePath(`/${locale}/inzeraty`);
-}
-
-// Serverová akce pro smazání inzerátu
-export async function deleteAdvertAction(id: number, locale: string) {
-  db.delete(advert).where(eq(advert.id, id)).run();
-  revalidatePath("/[locale]/inzeraty", "page");
   redirect(`/${locale}/inzeraty`);
 }

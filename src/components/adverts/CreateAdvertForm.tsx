@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Alert,
   Button,
   Card,
   Checkbox,
@@ -16,76 +15,53 @@ import {
 import { useForm } from "@mantine/form";
 import Image from "next/image";
 import { useState } from "react";
-import { deleteAdvertAction, updateAdvertAction } from "@/app/[locale]/inzeraty/[id]/upravit/edit-action";
-import type { Advert } from "@/db/schemas";
-import { getAdvertImageSources } from "@/helpers/advert-image";
-import { Link } from "@/i18n/navigation";
+import { createAdvertAction } from "@/app/[locale]/inzeraty/novy/create-action";
 
-interface EditAdvertFormProps {
-  inzerat: Advert;
+interface CreateAdvertFormProps {
   locale: string;
 }
 
 interface ZobrazenyObrazek {
   id: string;
   url: string;
-  typ: "stary" | "novy";
-  file?: File;
+  file: File;
 }
 
-export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
-  const [success, setSuccess] = useState(false);
+export function CreateAdvertForm({ locale }: CreateAdvertFormProps) {
   const [loading, setLoading] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [images, setImages] = useState<ZobrazenyObrazek[]>([]);
 
-  // 1. Inicializujeme stav pro obrázky (sjednotíme je pod jednotnou strukturu)
-  const [images, setImages] = useState<ZobrazenyObrazek[]>(() => {
-    const stareCesty = getAdvertImageSources(inzerat.obrazek);
-    return stareCesty.map((cesta, index) => ({
-      id: `stary-${index}-${cesta}`,
-      url: cesta,
-      typ: "stary",
-    }));
-  });
-
-  const handleDelete = async () => {
-    const potvrdit = window.confirm("Opravdu chcete smazat tento inzerát?");
-    if (!potvrdit) return;
-
-    setDeleting(true);
-    try {
-      await deleteAdvertAction(inzerat.id, locale);
-    } catch (error) {
-      console.error("Chyba při mazání:", error);
-      setDeleting(false);
-    }
-  };
-
-  // 2. Nastavení Mantine useForm
+  // Nastavení Mantine useForm
   const form = useForm({
     initialValues: {
-      titul: inzerat.titul,
-      popis: inzerat.popis,
-      cena: inzerat.cena,
-      zdarma: inzerat.cena === 0,
-      kategorie: inzerat.kategorie,
-      status: inzerat.status,
-      kontaktJmeno: inzerat.kontaktJmeno,
-      kontaktEmail: inzerat.kontaktEmail,
+      titul: "",
+      popis: "",
+      cena: 0,
+      zdarma: false,
+      kategorie: "",
+      status: "Dostupne",
+      kontaktJmeno: "",
+      kontaktEmail: "",
     },
     validate: {
       titul: (value) => (value.trim().length < 3 ? "Název věci musí mít aspoň 3 znaky" : null),
       popis: (value) => (value.trim().length < 10 ? "Popis věci musí mít aspoň 10 znaků" : null),
+      kategorie: (value) => (value === "" ? "Vyberte kategorii" : null),
       cena: (value, values) =>
-        !values.zdarma && Number(value) <= 0 ? "Cena musí být vyšší než 0, nebo zaškrtni zdarma" : null,
+        !values.zdarma && Number(value) <= 0 ? "Cena musí být vyšší než 0, nebo zaškrtněte zdarma" : null,
       kontaktJmeno: (value) => (value.trim().length === 0 ? "Jméno je povinné" : null),
-      kontaktEmail: (value) => (!value.includes("@") ? "Zadej platný e-mail" : null),
+      kontaktEmail: (value) => (!value.includes("@") ? "Zadejte platný e-mail" : null),
     },
   });
 
-  // 3. Klientské funkce pro správu fotek
+  // Funkce pro správu fotek
   const removeImage = (idToRemove: string) => {
-    setImages((prev) => prev.filter((img) => img.id !== idToRemove));
+    setImages((prev) => {
+      // Uvolníme objekt URL z paměti prohlížeče
+      const found = prev.find((img) => img.id === idToRemove);
+      if (found) URL.revokeObjectURL(found.url);
+      return prev.filter((img) => img.id !== idToRemove);
+    });
   };
 
   const moveImage = (index: number, direction: "left" | "right") => {
@@ -106,19 +82,17 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
     const souboryKPridani = vybraneSoubory.slice(0, volnePozice);
 
     const noveObrazky: ZobrazenyObrazek[] = souboryKPridani.map((soubor) => ({
-      id: `novy-${soubor.name}-${Date.now()}-${Math.random()}`,
+      id: `${soubor.name}-${Date.now()}-${Math.random()}`,
       url: URL.createObjectURL(soubor),
-      typ: "novy",
       file: soubor,
     }));
 
     setImages((prev) => [...prev, ...noveObrazky]);
   };
 
-  // 4. Odeslání formuláře (Sestavení FormData)
+  // Odeslání formuláře
   const handleSubmit = async (values: typeof form.values) => {
     setLoading(true);
-    setSuccess(false);
     try {
       const formData = new FormData();
       formData.append("titul", values.titul.trim());
@@ -129,22 +103,15 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
       formData.append("kontaktJmeno", values.kontaktJmeno.trim());
       formData.append("kontaktEmail", values.kontaktEmail.trim());
 
-      // Získáme pole zbylých starých obrázků
-      const stareCesty = images.filter((img) => img.typ === "stary").map((img) => img.url);
-      formData.append("stareCestyJson", JSON.stringify(stareCesty));
-
-      // Přidáme nové soubory přesně v aktuálním pořadí
+      // Přidáme nahrané soubory přesně v aktuálním seřazeném pořadí
       images.forEach((img) => {
-        if (img.typ === "novy" && img.file) {
-          formData.append("noveObrazkySoubory", img.file);
-        }
+        formData.append("noveObrazkySoubory", img.file);
       });
 
-      await updateAdvertAction(inzerat.id, locale, formData);
-      setSuccess(true);
+      // Spustíme serverovou akci pro uložení
+      await createAdvertAction(locale, formData);
     } catch (error) {
-      console.error("Chyba při ukládání:", error);
-    } finally {
+      console.error("Chyba při zakládání inzerátu:", error);
       setLoading(false);
     }
   };
@@ -153,22 +120,9 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
     <Card padding="xl" withBorder maw={864} w="100%" className="market-form-card">
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="lg">
-          {success && (
-            <Alert title="Úspěch! 🏺" color="teal" withCloseButton onClose={() => setSuccess(false)}>
-              Změny byly úspěšně uloženy do bazaru. Můžeš se vrátit zpět na{" "}
-              <Link
-                href={`/inzeraty/${inzerat.id}`}
-                style={{ textDecoration: "underline", color: "inherit", fontWeight: 700 }}
-              >
-                detail inzerátu
-              </Link>
-              .
-            </Alert>
-          )}
-
           <TextInput
             label="Název věci"
-            placeholder="Např. perský koberec"
+            placeholder="Např. koncertní kytara, horské kolo"
             classNames={{ input: "market-input", label: "market-input-label" }}
             required
             {...form.getInputProps("titul")}
@@ -176,7 +130,7 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
 
           <Textarea
             label="Popis"
-            placeholder="Popiš stav věci, rozměry..."
+            placeholder="Popište stav, rozměry, místo předání..."
             autosize
             minRows={6}
             maxRows={15}
@@ -230,74 +184,76 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
             />
           </Group>
 
-          {/* SEKCE PRO SPRÁVU OBRÁZKŮ */}
+          {/* INTERAKTIVNÍ SEKCE PRO SPRÁVU OBRÁZKŮ */}
           <Stack gap="xs" className="market-file-box">
             <Text fw={700} size="sm" className="market-input-label">
-              Správa obrázků (Seřaďte šipkami, první je úvodní fotka)
+              Fotografie inzerátu (Seřaďte šipkami, první je úvodní fotka – max. 10 fotek)
             </Text>
 
-            <Group gap="md" wrap="wrap">
-              {images.map((img, idx) => (
-                <div
-                  key={img.id}
-                  style={{
-                    position: "relative",
-                    border: "2px solid var(--bazaar-ink)",
-                    padding: "4px",
-                    background: "#ffffff",
-                    boxShadow: "2px 2px 0 rgba(0,0,0,0.15)",
-                  }}
-                >
-                  <Image src={img.url} alt="" width={80} height={80} style={{ objectFit: "cover" }} />
-
-                  {/* Tlačítko smazat */}
-                  <button
-                    type="button"
-                    onClick={() => removeImage(img.id)}
+            {images.length > 0 && (
+              <Group gap="md" wrap="wrap">
+                {images.map((img, idx) => (
+                  <div
+                    key={img.id}
                     style={{
-                      position: "absolute",
-                      top: "-8px",
-                      right: "-8px",
-                      background: "var(--bazaar-red)",
-                      color: "#ffffff",
+                      position: "relative",
                       border: "2px solid var(--bazaar-ink)",
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                      padding: "1px 5px",
-                      fontSize: "10px",
+                      padding: "4px",
+                      background: "#ffffff",
+                      boxShadow: "2px 2px 0 rgba(0,0,0,0.15)",
                     }}
                   >
-                    ❌
-                  </button>
+                    <Image src={img.url} alt="" width={80} height={80} style={{ objectFit: "cover" }} />
 
-                  {/* Šipky posunu */}
-                  <Group gap={6} justify="center" mt={6}>
+                    {/* Tlačítko smazat */}
                     <button
                       type="button"
-                      className="bazaar-image-nav-btn"
-                      disabled={idx === 0}
-                      onClick={() => moveImage(idx, "left")}
+                      onClick={() => removeImage(img.id)}
+                      style={{
+                        position: "absolute",
+                        top: "-8px",
+                        right: "-8px",
+                        background: "var(--bazaar-red)",
+                        color: "#ffffff",
+                        border: "2px solid var(--bazaar-ink)",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                        padding: "1px 5px",
+                        fontSize: "10px",
+                      }}
                     >
-                      ◀
+                      ❌
                     </button>
-                    <button
-                      type="button"
-                      className="bazaar-image-nav-btn"
-                      disabled={idx === images.length - 1}
-                      onClick={() => moveImage(idx, "right")}
-                    >
-                      ▶
-                    </button>
-                  </Group>
-                </div>
-              ))}
-            </Group>
+
+                    {/* Šipky posunu */}
+                    <Group gap={6} justify="center" mt={6}>
+                      <button
+                        type="button"
+                        className="bazaar-image-nav-btn"
+                        disabled={idx === 0}
+                        onClick={() => moveImage(idx, "left")}
+                      >
+                        ◀
+                      </button>
+                      <button
+                        type="button"
+                        className="bazaar-image-nav-btn"
+                        disabled={idx === images.length - 1}
+                        onClick={() => moveImage(idx, "right")}
+                      >
+                        ▶
+                      </button>
+                    </Group>
+                  </div>
+                ))}
+              </Group>
+            )}
 
             {/* Input pro nové soubory */}
             {images.length < 10 && (
               <Stack gap={4} mt="sm">
                 <Text size="xs" fw={700} className="market-input-label">
-                  Přidat další obrázky:
+                  Přidat obrázky ({images.length}/10):
                 </Text>
                 <input
                   type="file"
@@ -313,11 +269,12 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
           <SimpleGrid cols={{ base: 1, sm: 2 }}>
             <TextInput
               label="Jméno kontaktu"
-              placeholder="Tvoje jméno"
+              placeholder="Vaše jméno"
               classNames={{ input: "market-input", label: "market-input-label" }}
               required
               {...form.getInputProps("kontaktJmeno")}
             />
+
             <TextInput
               label="E-mail"
               type="email"
@@ -328,25 +285,24 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
             />
           </SimpleGrid>
 
-          <SimpleGrid cols={{ base: 1, sm: 2 }}>
-            <NativeSelect
-              label="Stav nabídky"
-              classNames={{ input: "market-input", label: "market-input-label" }}
-              required
-              {...form.getInputProps("status")}
-            >
-              <option value="Dostupne">Dostupné</option>
-              <option value="Rezervovano">Rezervováno</option>
-              <option value="Prodano">Prodáno</option>
-            </NativeSelect>
-          </SimpleGrid>
+          <NativeSelect
+            label="Stav nabídky při založení"
+            classNames={{ input: "market-input", label: "market-input-label" }}
+            required
+            {...form.getInputProps("status")}
+          >
+            <option value="Dostupne">Dostupné</option>
+            <option value="Rezervovano">Rezervované</option>
+            <option value="Prodano">Prodáno</option>
+          </NativeSelect>
 
-          <Group justify="space-between" align="center">
-            <Button type="button" className="market-delete-button" onClick={handleDelete} loading={deleting} h={42}>
-              Smazat inzerát ❌
-            </Button>
-            <Button type="submit" className="market-action-button" loading={loading} h={42}>
-              Uložit změny
+          <Text size="sm" c="dimmed">
+            Platbu a předání si domluvíte přímo se zájemcem.
+          </Text>
+
+          <Group justify="flex-end">
+            <Button type="submit" loading={loading} className="market-action-button" disabled={loading}>
+              {loading ? "Ukládám..." : "Přidat nabídku"}
             </Button>
           </Group>
         </Stack>

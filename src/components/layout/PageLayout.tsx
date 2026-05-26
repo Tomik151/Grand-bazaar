@@ -50,21 +50,27 @@ export function PageLayout({ children }: PropsWithChildren) {
           </Group>
 
           <div className="bazaar-ticker" aria-hidden="true">
-            <span>
-              *** GRAND PAZAR *** CAY HOT *** NAZAR ONLINE *** KILIM MODE *** PAZARLIK FRIENDLY *** BAKLAVA BONUS ***
-              GRAND PAZAR *** CAY HOT *** NAZAR ONLINE *** KILIM MODE *** PAZARLIK FRIENDLY *** BAKLAVA BONUS ***
+            <span className="bazaar-ticker-content">
+              *** GRAND BAZAAR *** CAY HOT *** NAKUPUJ, SMLOUVEJ, PRODÁVEJ *** BAKLAVA MODE *** PAZARLIK FRIENDLY ***
+              BAKLAVA BONUS ***&nbsp;
+            </span>
+            <span className="bazaar-ticker-content" aria-hidden="true">
+              *** GRAND BAZAAR *** CAY HOT *** NAKUPUJ, SMLOUVEJ, PRODÁVEJ *** BAKLAVA MODE *** PAZARLIK FRIENDLY ***
+              BAKLAVA BONUS ***&nbsp;
             </span>
           </div>
 
           <div className="bazaar-charms" aria-hidden="true">
-            <span>CAY</span>
-            <span>NAZAR</span>
+            <span>BAZAAR 2.0</span>
+            <span>VERY SECURE</span>
             <span>KILIM</span>
-            <span>BAKLAVA</span>
-            <span>SIMIT</span>
+            <span>BAKLAVA FRIENDLY</span>
+            <span>TURSKISH APPROVED</span>
             <span>KEBAB</span>
             <span>LOKUM</span>
             <span>PAZARLIK</span>
+            <span>DIVAS</span>
+            <span>EVERY BRAND CLOTHES</span>
           </div>
 
           <Image

@@ -9,7 +9,13 @@ export function PageLogo() {
 
   return (
     <Link href="/">
-      <Image src="/blogic-logo.png" alt={t("common.pageLogo.ariaLabel")} width={115} height={46} />
+      <Image
+        src="/blogic-logo.png"
+        alt={t("common.pageLogo.ariaLabel")}
+        width={115}
+        height={46}
+        style={{ height: "auto" }}
+      />
     </Link>
   );
 }
