@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Badge, Button, Card, Group, Stack, Text, TextInput } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import { Badge, Button, Card, Divider, Group, Stack, Text, TextInput } from "@mantine/core";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { sendChatMessage } from "../actions";
 
@@ -50,7 +49,9 @@ export function ChatRoomClient({ advert, buyerEmail, buyerName, messages }: Chat
 
   // 2. Automatický scroll dolů při načtení a nových zprávách
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages || currentUserEmail) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages, currentUserEmail]);
 
   // 3. Automatické obnovování chatu (polling) každé 3 sekundy, pokud je karta aktivní

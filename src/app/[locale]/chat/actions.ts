@@ -1,8 +1,8 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { chatMessage } from "@/db/schemas";
-import { revalidatePath } from "next/cache";
 
 export async function sendChatMessage(formData: FormData) {
   const advertId = Number(formData.get("advertId"));

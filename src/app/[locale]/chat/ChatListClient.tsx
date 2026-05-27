@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button, Card, Stack, Text, TextInput } from "@mantine/core";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function ChatListClient() {
   const router = useRouter();

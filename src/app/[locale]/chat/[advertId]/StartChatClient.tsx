@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Button, Card, Stack, Text, Textarea, TextInput } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import { Button, Card, Stack, Text, TextInput, Textarea } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { sendChatMessage } from "../actions";
 
 interface StartChatClientProps {
@@ -11,7 +11,7 @@ interface StartChatClientProps {
   sellerEmail: string;
 }
 
-export function StartChatClient({ advertId, advertTitle, sellerEmail }: StartChatClientProps) {
+export function StartChatClient({ advertId, advertTitle }: StartChatClientProps) {
   const router = useRouter();
   const [buyerName, setBuyerName] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
