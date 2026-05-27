@@ -30,7 +30,12 @@ async function updateAdvertStatus(formData: FormData) {
   revalidatePath("/[locale]/inzeraty", "page");
 }
 
-export default async function InzeratDetailPage({ params }: PageProps<"/[locale]/inzeraty/[id]">) {
+interface RouteParams {
+  id: string;
+  locale: string;
+}
+
+export default async function InzeratDetailPage({ params }: { params: Promise<RouteParams> }) {
   const { id } = await params;
   const advertId = Number(id);
 
@@ -92,6 +97,11 @@ export default async function InzeratDetailPage({ params }: PageProps<"/[locale]
               </Text>
               <Text className="market-detail-text">{inzerat.kontaktJmeno}</Text>
               <Text className="market-detail-text">{inzerat.kontaktEmail}</Text>
+              <Link href={`/chat/${inzerat.id}`}>
+                <Button size="md" fullWidth className="market-action-button" style={{ marginTop: 8 }}>
+                  Napsat prodejci 💬
+                </Button>
+              </Link>
             </Stack>
 
             <Divider className="market-divider" />

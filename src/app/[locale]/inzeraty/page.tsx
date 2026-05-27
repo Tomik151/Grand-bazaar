@@ -14,7 +14,25 @@ function normalizeValue(value: string | null | undefined): string {
     .toLowerCase();
 }
 
-export default async function InzeratyPage({ params, searchParams }: PageProps<"/[locale]/inzeraty">) {
+interface RouteParams {
+  locale: string;
+}
+
+interface SearchParams {
+  q?: string;
+  kategorie?: string;
+  stav?: string;
+  zdarma?: string;
+  page?: string;
+}
+
+export default async function InzeratyPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<RouteParams>;
+  searchParams: Promise<SearchParams>;
+}) {
   const { locale } = await params;
 
   // 1. Načtení všech parametrů z URL adresy

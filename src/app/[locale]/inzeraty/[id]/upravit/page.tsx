@@ -6,7 +6,12 @@ import { db } from "@/db";
 import { advert } from "@/db/schemas";
 import { Link } from "@/i18n/navigation";
 
-export default async function UpravitInzeratPage({ params }: PageProps<"/[locale]/inzeraty/[id]/upravit">) {
+interface RouteParams {
+  id: string;
+  locale: string;
+}
+
+export default async function UpravitInzeratPage({ params }: { params: Promise<RouteParams> }) {
   const { id, locale } = await params;
   const advertId = Number(id);
 

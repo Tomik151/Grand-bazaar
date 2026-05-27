@@ -14,7 +14,7 @@ export function PageLogo() {
         alt={t("common.pageLogo.ariaLabel")}
         width={115}
         height={46}
-        style={{ height: "auto" }}
+        style={{ width: "auto", height: "auto" }}
       />
     </Link>
   );

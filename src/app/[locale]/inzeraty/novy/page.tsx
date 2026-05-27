@@ -2,7 +2,11 @@ import { Button, Group, Stack, Text, Title } from "@mantine/core";
 import { CreateAdvertForm } from "@/components/adverts/CreateAdvertForm";
 import { Link } from "@/i18n/navigation";
 
-export default async function NovyInzeratPage({ params }: PageProps<"/[locale]/inzeraty/novy">) {
+interface RouteParams {
+  locale: string;
+}
+
+export default async function NovyInzeratPage({ params }: { params: Promise<RouteParams> }) {
   const { locale } = await params;
 
   return (
