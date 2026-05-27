@@ -43,6 +43,9 @@ export function PageLayout({ children }: PropsWithChildren) {
               <Button component={Link} href="/inzeraty" variant="subtle" className="bazaar-nav-button">
                 Trziste
               </Button>
+              <Button component={Link} href="/chat" variant="subtle" className="bazaar-nav-button">
+                Zprávy 💬
+              </Button>
               <Button component={Link} href="/inzeraty/novy" className="bazaar-nav-button bazaar-nav-button-primary">
                 Pridat zbozi
               </Button>

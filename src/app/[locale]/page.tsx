@@ -11,7 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Page(_: PageProps<"/[locale]">) {
+interface RouteParams {
+  locale: string;
+}
+
+export default async function Page(_: { params: Promise<RouteParams> }) {
   const t = await getTranslations();
 
   return <Title>{t("page.home.title")}</Title>;
