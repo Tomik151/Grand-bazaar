@@ -19,6 +19,7 @@ import { useState } from "react";
 import { deleteAdvertAction, updateAdvertAction } from "@/app/[locale]/inzeraty/[id]/upravit/edit-action";
 import type { Advert } from "@/db/schemas";
 import { getAdvertImageSources } from "@/helpers/advert-image";
+import { isValidCzechBankAccount } from "@/helpers/bank";
 import { Link } from "@/i18n/navigation";
 
 interface EditAdvertFormProps {
@@ -72,6 +73,7 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
       status: inzerat.status,
       kontaktJmeno: inzerat.kontaktJmeno,
       kontaktEmail: inzerat.kontaktEmail,
+      bankovniUcet: inzerat.bankovniUcet || "",
     },
     validate: {
       titul: (value) => (value.trim().length < 3 ? "Název věci musí mít aspoň 3 znaky" : null),
@@ -80,6 +82,10 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
         !values.zdarma && Number(value) <= 0 ? "Cena musí být vyšší než 0, nebo zaškrtni zdarma" : null,
       kontaktJmeno: (value) => (value.trim().length === 0 ? "Jméno je povinné" : null),
       kontaktEmail: (value) => (!value.includes("@") ? "Zadej platný e-mail" : null),
+      bankovniUcet: (value) =>
+        value.trim().length > 0 && !isValidCzechBankAccount(value)
+          ? "Zadejte platné číslo bankovního účtu (např. 2000123456/0800)"
+          : null,
     },
   });
 
@@ -128,6 +134,7 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
       formData.append("status", values.status);
       formData.append("kontaktJmeno", values.kontaktJmeno.trim());
       formData.append("kontaktEmail", values.kontaktEmail.trim());
+      formData.append("bankovniUcet", values.bankovniUcet.trim());
 
       // Získáme pole zbylých starých obrázků
       const stareCesty = images.filter((img) => img.typ === "stary").map((img) => img.url);
@@ -229,6 +236,13 @@ export function EditAdvertForm({ inzerat, locale }: EditAdvertFormProps) {
               }}
             />
           </Group>
+
+          <TextInput
+            label="Číslo bankovního účtu pro QR platby (volitelné)"
+            placeholder="Např. 2000123456/0800"
+            classNames={{ input: "market-input", label: "market-input-label" }}
+            {...form.getInputProps("bankovniUcet")}
+          />
 
           {/* SEKCE PRO SPRÁVU OBRÁZKŮ */}
           <Stack gap="xs" className="market-file-box">

@@ -24,6 +24,8 @@ export function ChatListClient() {
     if (!cleanEmail) return;
 
     localStorage.setItem("bazaar_chat_email", cleanEmail);
+    // biome-ignore lint/suspicious/noDocumentCookie: needed for server actions
+    document.cookie = `bazaar_chat_email=${encodeURIComponent(cleanEmail)}; path=/; max-age=31536000; SameSite=Lax`;
     router.push(`/chat?email=${encodeURIComponent(cleanEmail)}`);
   };
 

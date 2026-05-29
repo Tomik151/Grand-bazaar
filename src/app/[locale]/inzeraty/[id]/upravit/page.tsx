@@ -1,15 +1,18 @@
 import { Button, Stack } from "@mantine/core";
 import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { EditAdvertForm } from "@/components/adverts/EditAdvertForm";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
+import { isAdvertOwner } from "@/helpers/auth";
 import { Link } from "@/i18n/navigation";
 
 interface RouteParams {
   id: string;
   locale: string;
 }
+
+export const dynamic = "force-dynamic";
 
 export default async function UpravitInzeratPage({ params }: { params: Promise<RouteParams> }) {
   const { id, locale } = await params;
@@ -23,6 +26,11 @@ export default async function UpravitInzeratPage({ params }: { params: Promise<R
 
   if (!inzerat) {
     notFound();
+  }
+
+  const isOwner = await isAdvertOwner(inzerat.id, inzerat.heslo);
+  if (!isOwner) {
+    redirect(`/inzeraty/${inzerat.id}`);
   }
 
   return (

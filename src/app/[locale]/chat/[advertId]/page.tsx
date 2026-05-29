@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { advert, chatMessage } from "@/db/schemas";
@@ -12,6 +12,8 @@ interface RouteParams {
 interface SearchParams {
   buyerEmail?: string;
 }
+
+export const dynamic = "force-dynamic";
 
 export default async function ChatPage({
   params,
@@ -46,7 +48,7 @@ export default async function ChatPage({
   const messages = db
     .select()
     .from(chatMessage)
-    .where(and(eq(chatMessage.advertId, id), eq(chatMessage.buyerEmail, cleanBuyerEmail)))
+    .where(and(eq(chatMessage.advertId, id), eq(sql`lower(${chatMessage.buyerEmail})`, cleanBuyerEmail)))
     .orderBy(asc(chatMessage.createdAt))
     .all();
 

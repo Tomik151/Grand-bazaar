@@ -122,6 +122,12 @@ a {
   filter: drop-shadow(3px 3px 0 rgba(33, 19, 13, 0.25));
 }
 
+.bazaar-header-flag {
+  width: 92px;
+  height: auto;
+  flex-shrink: 0;
+}
+
 .bazaar-main-title,
 .market-kicker,
 .market-title,
@@ -246,6 +252,7 @@ a {
   display: flex;
   gap: 8px;
   align-items: center;
+  justify-content: center;
   height: 28px;
   overflow: hidden;
 }
@@ -334,10 +341,6 @@ a {
     var(--bazaar-cyan) 78px 92px
   );
   content: "";
-}
-
-.market-card:hover {
-  animation: bazaar-card-wiggle 220ms ease-in-out;
 }
 
 .market-card-image {
@@ -569,22 +572,22 @@ a {
 
 .pixel-firework {
   position: absolute;
-  z-index: 1;
-  width: 58px;
-  height: 58px;
+  z-index: 3;
+  width: 48px;
+  height: 48px;
   image-rendering: pixelated;
   pointer-events: none;
   opacity: 0.92;
 }
 
 .pixel-firework-left {
-  top: 8px;
-  left: min(34vw, 360px);
+  top: -10px;
+  left: -54px;
 }
 
 .pixel-firework-right {
-  top: 8px;
-  right: min(34vw, 360px);
+  top: -10px;
+  right: -54px;
 }
 
 .bazaar-side-decor {
@@ -629,6 +632,10 @@ a {
 }
 
 @media (max-width: 640px) {
+  .bazaar-header-flag {
+    display: none;
+  }
+
   .bazaar-main-title {
     top: 18px;
     padding: 5px 10px;

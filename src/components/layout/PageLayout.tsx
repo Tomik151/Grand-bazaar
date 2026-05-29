@@ -29,6 +29,14 @@ export function PageLayout({ children }: PropsWithChildren) {
           <Group h="72px" align="center" justify="space-between" wrap="nowrap">
             <div className="bazaar-brand">
               <PageLogo />
+              <Image
+                src="/decorations/turkish-flag-bazaar.gif"
+                alt=""
+                className="bazaar-header-flag"
+                width={92}
+                height={61}
+                unoptimized
+              />
             </div>
 
             <div className="bazaar-main-title">
@@ -63,35 +71,38 @@ export function PageLayout({ children }: PropsWithChildren) {
             </span>
           </div>
 
-          <div className="bazaar-charms" aria-hidden="true">
-            <span>BAZAAR 2.0</span>
-            <span>VERY SECURE</span>
-            <span>KILIM</span>
-            <span>BAKLAVA FRIENDLY</span>
-            <span>TURSKISH APPROVED</span>
-            <span>KEBAB</span>
-            <span>LOKUM</span>
-            <span>PAZARLIK</span>
-            <span>DIVAS</span>
-            <span>EVERY BRAND CLOTHES</span>
+          <div style={{ display: "flex", justifyContent: "center", width: "100%", position: "relative", marginTop: 4 }}>
+            <div style={{ position: "relative", width: "fit-content" }}>
+              <Image
+                src="/decorations/yellow-firework-a.gif"
+                alt=""
+                className="pixel-firework pixel-firework-left"
+                width={64}
+                height={64}
+                unoptimized
+              />
+              <div className="bazaar-charms" aria-hidden="true">
+                <span>BAZAAR 2.0</span>
+                <span>VERY SECURE</span>
+                <span>KILIM</span>
+                <span>BAKLAVA FRIENDLY</span>
+                <span>TURSKISH APPROVED</span>
+                <span>KEBAB</span>
+                <span>LOKUM</span>
+                <span>PAZARLIK</span>
+                <span>DIVAS</span>
+                <span>EVERY BRAND CLOTHES</span>
+              </div>
+              <Image
+                src="/decorations/yellow-firework-b.gif"
+                alt=""
+                className="pixel-firework pixel-firework-right"
+                width={64}
+                height={64}
+                unoptimized
+              />
+            </div>
           </div>
-
-          <Image
-            src="/decorations/yellow-firework-a.gif"
-            alt=""
-            className="pixel-firework pixel-firework-left"
-            width={64}
-            height={64}
-            unoptimized
-          />
-          <Image
-            src="/decorations/yellow-firework-b.gif"
-            alt=""
-            className="pixel-firework pixel-firework-right"
-            width={64}
-            height={64}
-            unoptimized
-          />
         </Container>
       </AppShell.Header>
 
