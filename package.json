@@ -52,5 +52,9 @@
     "husky": "^9.1.7",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "postcss": "^8.5.10",
+    "esbuild": "^0.25.0"
   }
 }

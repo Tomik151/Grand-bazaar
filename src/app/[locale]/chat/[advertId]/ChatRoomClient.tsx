@@ -71,6 +71,8 @@ export function ChatRoomClient({ advert, buyerEmail, buyerName, messages }: Chat
     const cleanEmail = inputEmail.trim().toLowerCase();
     if (cleanEmail === buyerEmail.toLowerCase() || cleanEmail === advert.kontaktEmail.toLowerCase()) {
       localStorage.setItem("bazaar_chat_email", cleanEmail);
+      // biome-ignore lint/suspicious/noDocumentCookie: needed for server actions
+      document.cookie = `bazaar_chat_email=${encodeURIComponent(cleanEmail)}; path=/; max-age=31536000; SameSite=Lax`;
       setCurrentUserEmail(cleanEmail);
     } else {
       alert("Tento e-mail nepatří žádnému z účastníků této konverzace!");

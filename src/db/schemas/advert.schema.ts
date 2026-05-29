@@ -10,6 +10,8 @@ export const advert = sqliteTable("advert", {
   obrazek: text(),
   kontaktJmeno: text().notNull(),
   kontaktEmail: text().notNull(),
+  heslo: text().notNull().default(""),
+  bankovniUcet: text(),
 });
 
 export type Advert = typeof advert.$inferSelect;

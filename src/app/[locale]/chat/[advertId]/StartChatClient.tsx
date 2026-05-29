@@ -43,6 +43,8 @@ export function StartChatClient({ advertId, advertTitle }: StartChatClientProps)
       // Uložíme jméno a e-mail do localStorage pro příště
       localStorage.setItem("bazaar_chat_email", cleanEmail);
       localStorage.setItem("bazaar_chat_name", cleanName);
+      // biome-ignore lint/suspicious/noDocumentCookie: needed for server actions
+      document.cookie = `bazaar_chat_email=${encodeURIComponent(cleanEmail)}; path=/; max-age=31536000; SameSite=Lax`;
 
       const formData = new FormData();
       formData.append("advertId", String(advertId));

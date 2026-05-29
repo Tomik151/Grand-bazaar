@@ -16,6 +16,7 @@ import { useForm } from "@mantine/form";
 import Image from "next/image";
 import { useState } from "react";
 import { createAdvertAction } from "@/app/[locale]/inzeraty/novy/create-action";
+import { isValidCzechBankAccount } from "@/helpers/bank";
 
 interface CreateAdvertFormProps {
   locale: string;
@@ -42,6 +43,8 @@ export function CreateAdvertForm({ locale }: CreateAdvertFormProps) {
       status: "Dostupne",
       kontaktJmeno: "",
       kontaktEmail: "",
+      heslo: "",
+      bankovniUcet: "",
     },
     validate: {
       titul: (value) => (value.trim().length < 3 ? "Název věci musí mít aspoň 3 znaky" : null),
@@ -51,6 +54,11 @@ export function CreateAdvertForm({ locale }: CreateAdvertFormProps) {
         !values.zdarma && Number(value) <= 0 ? "Cena musí být vyšší než 0, nebo zaškrtněte zdarma" : null,
       kontaktJmeno: (value) => (value.trim().length === 0 ? "Jméno je povinné" : null),
       kontaktEmail: (value) => (!value.includes("@") ? "Zadejte platný e-mail" : null),
+      heslo: (value) => (value.trim().length < 4 ? "Heslo musí mít alespoň 4 znaky" : null),
+      bankovniUcet: (value) =>
+        value.trim().length > 0 && !isValidCzechBankAccount(value)
+          ? "Zadejte platné číslo bankovního účtu (např. 2000123456/0800)"
+          : null,
     },
   });
 
@@ -102,6 +110,8 @@ export function CreateAdvertForm({ locale }: CreateAdvertFormProps) {
       formData.append("status", values.status);
       formData.append("kontaktJmeno", values.kontaktJmeno.trim());
       formData.append("kontaktEmail", values.kontaktEmail.trim());
+      formData.append("heslo", values.heslo.trim()); // Přidáno
+      formData.append("bankovniUcet", values.bankovniUcet.trim());
 
       // Přidáme nahrané soubory přesně v aktuálním seřazeném pořadí
       images.forEach((img) => {
@@ -183,6 +193,13 @@ export function CreateAdvertForm({ locale }: CreateAdvertFormProps) {
               }}
             />
           </Group>
+
+          <TextInput
+            label="Číslo bankovního účtu pro QR platby (volitelné)"
+            placeholder="Např. 2000123456/0800"
+            classNames={{ input: "market-input", label: "market-input-label" }}
+            {...form.getInputProps("bankovniUcet")}
+          />
 
           {/* INTERAKTIVNÍ SEKCE PRO SPRÁVU OBRÁZKŮ */}
           <Stack gap="xs" className="market-file-box">
@@ -284,6 +301,15 @@ export function CreateAdvertForm({ locale }: CreateAdvertFormProps) {
               {...form.getInputProps("kontaktEmail")}
             />
           </SimpleGrid>
+
+          <TextInput
+            label="Heslo pro budoucí úpravu / smazání"
+            placeholder="Zadejte libovolné heslo (min. 4 znaky)"
+            type="password"
+            required
+            classNames={{ input: "market-input", label: "market-input-label" }}
+            {...form.getInputProps("heslo")}
+          />
 
           <NativeSelect
             label="Stav nabídky při založení"

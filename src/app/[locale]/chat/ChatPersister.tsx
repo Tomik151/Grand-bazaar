@@ -12,11 +12,16 @@ export function ChatPersister({ email }: ChatPersisterProps) {
   const router = useRouter();
 
   useEffect(() => {
-    localStorage.setItem("bazaar_chat_email", email.trim().toLowerCase());
+    const cleanEmail = email.trim().toLowerCase();
+    localStorage.setItem("bazaar_chat_email", cleanEmail);
+    // biome-ignore lint/suspicious/noDocumentCookie: needed for server actions
+    document.cookie = `bazaar_chat_email=${encodeURIComponent(cleanEmail)}; path=/; max-age=31536000; SameSite=Lax`;
   }, [email]);
 
   const handleLogout = () => {
     localStorage.removeItem("bazaar_chat_email");
+    // biome-ignore lint/suspicious/noDocumentCookie: needed for server actions
+    document.cookie = "bazaar_chat_email=; path=/; max-age=0";
     router.push("/chat");
   };
 

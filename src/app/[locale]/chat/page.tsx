@@ -1,5 +1,5 @@
 import { Badge, Button, Card, Divider, Group, SimpleGrid, Stack, Text } from "@mantine/core";
-import { eq, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 import Image from "next/image";
 import { db } from "@/db";
 import { advert, chatMessage } from "@/db/schemas";
@@ -7,6 +7,7 @@ import { getAdvertImageSources } from "@/helpers/advert-image";
 import { Link } from "@/i18n/navigation";
 import { ChatListClient } from "./ChatListClient";
 import { ChatPersister } from "./ChatPersister";
+import { DeleteChatButton } from "./DeleteChatButton";
 
 interface SearchParams {
   email?: string;
@@ -35,7 +36,9 @@ export default async function ChatListPage({ searchParams }: { searchParams: Pro
     })
     .from(chatMessage)
     .innerJoin(advert, eq(chatMessage.advertId, advert.id))
-    .where(or(eq(chatMessage.buyerEmail, cleanEmail), eq(advert.kontaktEmail, cleanEmail)))
+    .where(
+      or(eq(sql`lower(${chatMessage.buyerEmail})`, cleanEmail), eq(sql`lower(${advert.kontaktEmail})`, cleanEmail)),
+    )
     .all();
 
   // Seskupíme zprávy podle konverzací (inzerat.id + buyerEmail)
@@ -199,11 +202,14 @@ export default async function ChatListPage({ searchParams }: { searchParams: Pro
                         {formattedTime(chat.latestTime)}
                       </Text>
 
-                      <Link href={`/chat/${chat.advertId}?buyerEmail=${chat.buyerEmail}`}>
-                        <Button size="xs" className="market-card-button">
-                          Otevřít chat 💬
-                        </Button>
-                      </Link>
+                      <Group gap="xs">
+                        {chat.isMeSeller && <DeleteChatButton advertId={chat.advertId} buyerEmail={chat.buyerEmail} />}
+                        <Link href={`/chat/${chat.advertId}?buyerEmail=${chat.buyerEmail}`}>
+                          <Button size="xs" className="market-card-button">
+                            Otevřít chat 💬
+                          </Button>
+                        </Link>
+                      </Group>
                     </Group>
                   </Stack>
                 </Group>

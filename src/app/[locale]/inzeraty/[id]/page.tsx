@@ -1,39 +1,25 @@
 import { Alert, Badge, Button, Card, Divider, Group, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ImageCarousel } from "@/components/adverts/ImageCarousel";
+import { OwnerPasswordForm } from "@/components/adverts/OwnerPasswordForm";
 import { db } from "@/db";
 import { advert } from "@/db/schemas";
 import { getAdvertImageSources } from "@/helpers/advert-image";
 import { getAdvertStatusBadgeClassName } from "@/helpers/advert-status";
+import { isAdvertOwner } from "@/helpers/auth";
+import { convertCzechAccountToIban } from "@/helpers/bank";
 import { Link } from "@/i18n/navigation";
 
-async function updateAdvertStatus(formData: FormData) {
-  "use server";
-
-  const id = Number(formData.get("id"));
-  const status = String(formData.get("status") ?? "");
-
-  if (!Number.isInteger(id)) {
-    return;
-  }
-
-  if (!["Dostupne", "Rezervovano", "Prodano"].includes(status)) {
-    return;
-  }
-
-  db.update(advert).set({ status }).where(eq(advert.id, id)).run();
-
-  revalidatePath("/[locale]/inzeraty/[id]", "page");
-  revalidatePath("/[locale]/inzeraty", "page");
-}
+import { updateAdvertStatus } from "./upravit/edit-action";
 
 interface RouteParams {
   id: string;
   locale: string;
 }
+
+export const dynamic = "force-dynamic";
 
 export default async function InzeratDetailPage({ params }: { params: Promise<RouteParams> }) {
   const { id } = await params;
@@ -48,8 +34,12 @@ export default async function InzeratDetailPage({ params }: { params: Promise<Ro
   if (!inzerat) {
     notFound();
   }
+  const isOwner = await isAdvertOwner(inzerat.id, inzerat.heslo);
 
   const imageSources = getAdvertImageSources(inzerat.obrazek);
+
+  const iban = inzerat.bankovniUcet ? convertCzechAccountToIban(inzerat.bankovniUcet) : null;
+  const showQrCode = inzerat.cena > 0 && iban !== null;
 
   return (
     <Stack gap="lg" className="market-page">
@@ -72,11 +62,13 @@ export default async function InzeratDetailPage({ params }: { params: Promise<Ro
                 <Badge variant="filled" className={getAdvertStatusBadgeClassName(inzerat.status)}>
                   {inzerat.status}
                 </Badge>
-                <Link href={`/inzeraty/${inzerat.id}/upravit`}>
-                  <Button variant="outline" className="market-card-button">
-                    Upravit
-                  </Button>
-                </Link>
+                {isOwner && (
+                  <Link href={`/inzeraty/${inzerat.id}/upravit`}>
+                    <Button variant="outline" className="market-card-button">
+                      Upravit
+                    </Button>
+                  </Link>
+                )}
               </Group>
             </Group>
 
@@ -126,7 +118,7 @@ export default async function InzeratDetailPage({ params }: { params: Promise<Ro
               </Stack>
             </Group>
 
-            {inzerat.cena > 0 ? (
+            {showQrCode ? (
               <>
                 <Divider className="market-divider" />
                 <Card withBorder padding="md" className="market-qr-payment-card">
@@ -138,9 +130,7 @@ export default async function InzeratDetailPage({ params }: { params: Promise<Ro
                     <Group gap="md" align="center" wrap="nowrap">
                       <Image
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-                          `SPD*1.0*ACC:CZ6408000000002000123456*AM:${inzerat.cena.toFixed(
-                            2,
-                          )}*CC:CZK*MSG:INZERAT-${inzerat.id}`,
+                          `SPD*1.0*ACC:${iban}*AM:${inzerat.cena.toFixed(2)}*CC:CZK*MSG:INZERAT-${inzerat.id}`,
                         )}`}
                         alt="QR kód pro platbu"
                         width={200}
@@ -161,7 +151,7 @@ export default async function InzeratDetailPage({ params }: { params: Promise<Ro
                           Tento QR kód je funkční standardní QR platba!
                         </Text>
                         <Text size="xs" style={{ lineHeight: 1.3, fontFamily: "monospace", fontWeight: 500 }}>
-                          <strong>Účet:</strong> 2000123456/0800
+                          <strong>Účet:</strong> {inzerat.bankovniUcet}
                           <br />
                           <strong>Částka:</strong> {inzerat.cena} Kč
                           <br />
@@ -197,31 +187,47 @@ export default async function InzeratDetailPage({ params }: { params: Promise<Ro
               </>
             ) : null}
 
-            <Divider className="market-divider" />
+            {isOwner ? (
+              <Stack gap="xs">
+                <Text size="sm" className="market-label">
+                  Změnit stav inzerátu 🏺
+                </Text>
 
-            <Stack gap="xs">
-              <Text size="sm" className="market-label">
-                Zmenit stav
-              </Text>
+                <Group>
+                  {inzerat.status !== "Dostupne" && (
+                    <form action={updateAdvertStatus}>
+                      <input type="hidden" name="id" value={inzerat.id} />
+                      <input type="hidden" name="status" value="Dostupne" />
+                      <Button type="submit" className="market-card-button">
+                        Označit jako dostupné
+                      </Button>
+                    </form>
+                  )}
 
-              <Group>
-                <form action={updateAdvertStatus}>
-                  <input type="hidden" name="id" value={inzerat.id} />
-                  <input type="hidden" name="status" value="Rezervovano" />
-                  <Button type="submit" className="market-card-button">
-                    Rezervovat
-                  </Button>
-                </form>
+                  {inzerat.status !== "Rezervovano" && (
+                    <form action={updateAdvertStatus}>
+                      <input type="hidden" name="id" value={inzerat.id} />
+                      <input type="hidden" name="status" value="Rezervovano" />
+                      <Button type="submit" className="market-card-button">
+                        Rezervovat
+                      </Button>
+                    </form>
+                  )}
 
-                <form action={updateAdvertStatus}>
-                  <input type="hidden" name="id" value={inzerat.id} />
-                  <input type="hidden" name="status" value="Prodano" />
-                  <Button type="submit" className="market-action-button">
-                    Prodano
-                  </Button>
-                </form>
-              </Group>
-            </Stack>
+                  {inzerat.status !== "Prodano" && (
+                    <form action={updateAdvertStatus}>
+                      <input type="hidden" name="id" value={inzerat.id} />
+                      <input type="hidden" name="status" value="Prodano" />
+                      <Button type="submit" className="market-action-button">
+                        Prodáno
+                      </Button>
+                    </form>
+                  )}
+                </Group>
+              </Stack>
+            ) : (
+              <OwnerPasswordForm advertId={inzerat.id} />
+            )}
           </Stack>
         </SimpleGrid>
       </Card>
